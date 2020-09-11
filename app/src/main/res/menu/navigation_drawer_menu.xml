@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:icon="@drawable/ic_home"
+        android:title="Home"
+        android:id="@+id/homeMenuItem"/>
+
+    <item
+        android:icon="@drawable/ic_account_circle"
+        android:title="Account"
+        android:id="@+id/accountMenuItem"/>
+
+    <item
+        android:icon="@drawable/ic_settings"
+        android:title="Settings"
+        android:id="@+id/settingsMenuItem"/>
+
+    <item
+        android:icon="@drawable/ic_privacy"
+        android:title="Privacy"
+        android:id="@+id/privacyMenuItem"/>
+
+    <item
+        android:icon="@drawable/ic_logout"
+        android:title="Logout"
+        android:id="@+id/logoutMenuItem"/>
+
+</menu>
