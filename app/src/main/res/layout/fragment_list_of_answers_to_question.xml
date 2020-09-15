@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="6dp"
-    tools:context=".ui.fragment.AnswerRequestFragment">
+    tools:context=".ListOfAnswersToQuestionFragment">
 
     <TextView
-        android:id="@+id/tvAnswerRequestPageTitle"
+        android:id="@+id/tvListOfAnswersToQuestionTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Can you answer any of these questions?"
+        android:text="List of answers to question:  ${quiz}"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -21,13 +21,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewAnswerRequest"
+        android:id="@+id/recyclerViewListOfAnswersToQuestion"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvAnswerRequestPageTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/tvListOfAnswersToQuestionTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

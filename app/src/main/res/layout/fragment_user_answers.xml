@@ -4,30 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="6dp"
-    tools:context=".ui.fragment.AnswerRequestFragment">
+    android:padding="10dp"
+    tools:context=".ui.fragment.UserAnswersFragment">
 
     <TextView
-        android:id="@+id/tvAnswerRequestPageTitle"
+        android:id="@+id/tvUserAnswersTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Can you answer any of these questions?"
+        android:text="Your Answers"
         android:textAlignment="center"
-        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewAnswerRequest"
+        android:id="@+id/recyclerViewUserAnswers"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="11dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvAnswerRequestPageTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/tvUserAnswersTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
