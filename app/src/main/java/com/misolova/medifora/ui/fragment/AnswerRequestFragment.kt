@@ -5,56 +5,57 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
+import com.misolova.medifora.domain.Question
+import com.misolova.medifora.util.adapters.AnswerRequestAdapter
+import com.misolova.medifora.util.adapters.HomeFeedAdapter
+import timber.log.Timber
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AnswerRequestFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AnswerRequestFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var adapter: AnswerRequestAdapter
+    private val questionsArrayList: ArrayList<Question> =
+        arrayListOf(
+            Question("111", "Fake content", "First answer", 3,"Collins", "12/08/2010"),
+            Question("222", "Testing content", "Second answer", 2,"John", "20/03/2020")
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_answer_request, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_answer_request, container, false)
+
+        val btnAnswerRequestConfirm = rootView.findViewById(R.id.btnAnswerRequestConfirm) as MaterialButton?
+
+//        btnAnswerRequestConfirm?.setOnClickListener {
+//            Snackbar.make(rootView, "Details Button clicked for question", Snackbar.LENGTH_LONG)
+//                .show()
+//            Timber.i("Button clicked to go to details")
+//        }
+
+        setupRecyclerview(inflater, container, rootView)
+
+        adapter.notifyDataSetChanged()
+        return rootView
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AnswerRequestFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             AnswerRequestFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+                AnswerRequestFragment()
             }
+    }
+
+    private fun setupRecyclerview(inflater: LayoutInflater, container: ViewGroup?, rootView: View?) {
+        val recyclerView = rootView?.findViewById(R.id.recyclerViewAnswerRequest) as RecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(activity)
+        adapter = AnswerRequestAdapter(questionsArrayList)
+        recyclerView.adapter = adapter
     }
 }

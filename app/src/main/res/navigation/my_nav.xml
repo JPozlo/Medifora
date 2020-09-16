@@ -21,6 +21,12 @@
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_listOfAnswersToQuestionFragment"
+            app:destination="@id/listOfAnswersToQuestionFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_questionFormFragment"
+            app:destination="@id/questionFormFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -38,7 +44,11 @@
         android:id="@+id/answerRequestFragment"
         android:name="com.misolova.medifora.ui.fragment.AnswerRequestFragment"
         android:label="Answer Requests"
-        tools:layout="@layout/fragment_answer_request" />
+        tools:layout="@layout/fragment_answer_request" >
+        <action
+            android:id="@+id/action_answerRequestFragment_to_answerFormFragment"
+            app:destination="@id/answerFormFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.misolova.medifora.ui.fragment.SettingsFragment"
@@ -88,6 +98,9 @@
         <action
             android:id="@+id/action_userQuestionsFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_userQuestionsFragment_to_listOfAnswersToQuestionFragment"
+            app:destination="@id/listOfAnswersToQuestionFragment" />
     </fragment>
     <fragment
         android:id="@+id/userAnswersFragment"
@@ -97,20 +110,31 @@
         <action
             android:id="@+id/action_userAnswersFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_userAnswersFragment_to_listOfAnswersToQuestionFragment"
+            app:destination="@id/listOfAnswersToQuestionFragment" />
     </fragment>
     <fragment
         android:id="@+id/listOfAnswersToQuestionFragment"
-        android:name="com.misolova.medifora.ListOfAnswersToQuestionFragment"
+        android:name="com.misolova.medifora.ui.fragment.ListOfAnswersToQuestionFragment"
         android:label="fragment_list_of_answers_to_question"
         tools:layout="@layout/fragment_list_of_answers_to_question" />
     <fragment
         android:id="@+id/answerFormFragment"
-        android:name="com.misolova.medifora.AnswerFormFragment"
+        android:name="com.misolova.medifora.ui.fragment.AnswerFormFragment"
         android:label="fragment_answer_form"
-        tools:layout="@layout/fragment_answer_form" />
+        tools:layout="@layout/fragment_answer_form" >
+        <action
+            android:id="@+id/action_answerFormFragment_to_listOfAnswersToQuestionFragment2"
+            app:destination="@id/listOfAnswersToQuestionFragment" />
+    </fragment>
     <fragment
         android:id="@+id/questionFormFragment"
-        android:name="com.misolova.medifora.QuestionFormFragment"
+        android:name="com.misolova.medifora.ui.fragment.QuestionFormFragment"
         android:label="fragment_question_form"
-        tools:layout="@layout/fragment_question_form" />
+        tools:layout="@layout/fragment_question_form" >
+        <action
+            android:id="@+id/action_questionFormFragment_to_listOfAnswersToQuestionFragment"
+            app:destination="@id/listOfAnswersToQuestionFragment" />
+    </fragment>
 </navigation>
