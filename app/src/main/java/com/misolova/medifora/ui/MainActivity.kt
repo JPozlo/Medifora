@@ -38,9 +38,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        GlobalScope.launch {
-            checkConnection()
-        }
+//        GlobalScope.launch {
+//            checkConnection()
+//        }
 
         val navController = findNavController(R.id.my_nav_host_fragment)
 

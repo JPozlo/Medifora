@@ -9,7 +9,7 @@ import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_list_of_answers_to_question_item.view.*
 import timber.log.Timber
 
-class AnswersListToQuestionAdapter(private val answersToQuizArrayList: ArrayList<Answer>): RecyclerView.Adapter<AnswersListToQuestionAdapter.AnswersListToQuestionAdapterViewHolder>() {
+class AnswersListToQuestionAdapter(private val answersToQuizArrayList: List<Answer>): RecyclerView.Adapter<AnswersListToQuestionAdapter.AnswersListToQuestionAdapterViewHolder>() {
     inner class AnswersListToQuestionAdapterViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnClickListener{
         private var view: View = itemView
         private var answer: Answer? = null

@@ -1,9 +1,9 @@
 package com.misolova.medifora.domain
 
 data class Question(
-    val ID: String,
+    val ID: Int,
     val content: String,
-    val answer: String,
+    val answerIDs: ArrayList<Int>,
     val totalAnswersNumber: Int,
     val author: String,
     val createdAt: String

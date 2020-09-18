@@ -19,11 +19,7 @@ import kotlinx.android.synthetic.main.fragment_user_answers_item.*
 class UserAnswersFragment : Fragment() {
 
     private lateinit var adapter: UserAnswersAdapter
-    private var userAnswersArrayList: ArrayList<Answer> =
-        arrayListOf(
-            Answer("333", "Fake content", "First quiz", "Collins","12/08/2010"),
-            Answer("444", "Testing content", "Second quiz", "John", "20/03/2020")
-        )
+    private lateinit var userAnswersArrayList: List<Answer>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +28,7 @@ class UserAnswersFragment : Fragment() {
 
         val rootView = inflater.inflate(R.layout.fragment_user_answers, container, false)
 
-        setupRecyclerview(inflater, container, rootView)
+        setupRecyclerview(rootView)
 
         val btnUserAnswerDetails = rootView.findViewById(R.id.btnUserAnswerDetails) as MaterialButton?
 
@@ -53,10 +49,10 @@ class UserAnswersFragment : Fragment() {
             }
     }
 
-    private fun setupRecyclerview(inflater: LayoutInflater, container: ViewGroup?, rootView: View?) {
+    private fun setupRecyclerview(rootView: View?) {
         val recyclerView = rootView?.findViewById(R.id.recyclerViewUserAnswers) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        adapter = UserAnswersAdapter(userAnswersArrayList)
+        adapter = UserAnswersAdapter(userAnswersArrayList, findNavController())
         recyclerView.adapter = adapter
     }
 }

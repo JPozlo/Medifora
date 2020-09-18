@@ -118,14 +118,19 @@
         android:id="@+id/listOfAnswersToQuestionFragment"
         android:name="com.misolova.medifora.ui.fragment.ListOfAnswersToQuestionFragment"
         android:label="fragment_list_of_answers_to_question"
-        tools:layout="@layout/fragment_list_of_answers_to_question" />
+        tools:layout="@layout/fragment_list_of_answers_to_question" >
+        <argument
+            android:name="questionID"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
     <fragment
         android:id="@+id/answerFormFragment"
         android:name="com.misolova.medifora.ui.fragment.AnswerFormFragment"
         android:label="fragment_answer_form"
         tools:layout="@layout/fragment_answer_form" >
         <action
-            android:id="@+id/action_answerFormFragment_to_listOfAnswersToQuestionFragment2"
+            android:id="@+id/action_answerFormFragment_to_listOfAnswersToQuestionFragment"
             app:destination="@id/listOfAnswersToQuestionFragment" />
     </fragment>
     <fragment

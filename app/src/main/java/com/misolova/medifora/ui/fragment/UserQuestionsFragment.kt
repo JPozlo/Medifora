@@ -18,20 +18,16 @@ import kotlinx.android.synthetic.main.fragment_user_questions_item.*
 class UserQuestionsFragment : Fragment() {
 
     private lateinit var adapter: UserQuestionsAdapter
-    private var questionsArrayList: ArrayList<Question> =
-        arrayListOf(
-            Question("111", "Fake content", "First answer", 3,"Collins", "12/08/2010"),
-            Question("222", "Testing content", "Second answer", 2,"John", "20/03/2020")
-        )
+    private lateinit var questionsArrayList: List<Question>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val rootView = inflater.inflate(R.layout.fragment_list_of_answers_to_question, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_user_questions, container, false)
 
-        setupRecyclerview(inflater, container, rootView)
+        setupRecyclerview(rootView)
 
         adapter.notifyDataSetChanged()
 
@@ -46,10 +42,10 @@ class UserQuestionsFragment : Fragment() {
             }
     }
 
-    private fun setupRecyclerview(inflater: LayoutInflater, container: ViewGroup?, rootView: View?) {
+    private fun setupRecyclerview(rootView: View?) {
         val recyclerView = rootView?.findViewById(R.id.recyclerViewUserQuestions) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        adapter = UserQuestionsAdapter(questionsArrayList)
+        adapter = UserQuestionsAdapter(questionsArrayList, findNavController())
         recyclerView.adapter = adapter
     }
 }

@@ -24,12 +24,12 @@ class ProfileFragment : Fragment() {
         val btnUserQuestions = rootView.findViewById(R.id.btnProfileUserQuestions) as MaterialButton?
 
         btnUserAnswers?.setOnClickListener {
-            Timber.d("${Companion.TAG}: User Answers Button clicked")
+            Timber.d("$TAG: User Answers Button clicked")
             findNavController().navigate(R.id.action_profileFragment_to_userAnswersFragment)
         }
 
         btnUserQuestions?.setOnClickListener {
-            Timber.d("${Companion.TAG}: User Questions Button clicked")
+            Timber.d("$TAG: User Questions Button clicked")
             findNavController().navigate(R.id.action_profileFragment_to_userQuestionsFragment)
         }
 
@@ -38,7 +38,7 @@ class ProfileFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             ProfileFragment().apply {
                 ProfileFragment()
             }

@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
 
 
@@ -14,15 +17,25 @@ class AnswerFormFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_answer_form, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_answer_form, container, false)
+
+        val btnSubmitAnswer = rootView.findViewById(R.id.btnSubmitAnswerForm) as MaterialButton?
+
+        btnSubmitAnswer?.setOnClickListener {
+            Snackbar.make(rootView, "Answer saved to DB", Snackbar.LENGTH_LONG).show()
+            findNavController().navigate(R.id.action_answerFormFragment_to_listOfAnswersToQuestionFragment)
+        }
+
+        return rootView
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             AnswerFormFragment().apply {
                 AnswerFormFragment()
             }
+
+        private const val TAG = "ANSWER FORM FRAGMENT"
     }
 }
