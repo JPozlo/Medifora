@@ -12,10 +12,14 @@ import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_user_answers_item.view.*
 import timber.log.Timber
 
-class UserAnswersAdapter(private val userAnswersArrayList: List<Answer>, private val navController: NavController): RecyclerView.Adapter<UserAnswersAdapter.UserAnswersViewHolder>() {
+class UserAnswersAdapter(private val userAnswersArrayList: List<Answer>, private val navController: NavController,
+                         private val itemClick: (Int) -> Unit): RecyclerView.Adapter<UserAnswersAdapter.UserAnswersViewHolder>() {
 
     inner class UserAnswersViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        private var view: View = itemView
+
+        init {
+            itemView.setOnClickListener { itemClick(adapterPosition) }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserAnswersViewHolder {

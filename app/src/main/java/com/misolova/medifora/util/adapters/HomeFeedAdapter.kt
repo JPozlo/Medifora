@@ -22,14 +22,8 @@ class HomeFeedAdapter(private val homeQuestionsArrayList: List<Question>,
     inner class HomeFeedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         init {
-//            itemView.setOnClickListener(this)
             itemView.setOnClickListener { itemClick(adapterPosition) }
         }
-
-//        override fun onClick(v: View?) {
-//            Timber.i("HomeFeed RecyclerView: CLICK!")
-//            navController.navigate(navDirections)
-//        }
 
     }
 
@@ -47,7 +41,7 @@ class HomeFeedAdapter(private val homeQuestionsArrayList: List<Question>,
         val question = homeQuestionsArrayList[position]
         holder.itemView.tvHomeFeedQuestionItem.text = question.content
         holder.itemView.tvHomeFeedAnswerAuthorItem.text = question.author
-        holder.itemView.tvHomeFeedAnswersItem.text = "Placeholder Answer Content"
+        holder.itemView.tvHomeFeedAnswersItem.text = "Placeholder Top Answer Content Preview"
     }
 
 }

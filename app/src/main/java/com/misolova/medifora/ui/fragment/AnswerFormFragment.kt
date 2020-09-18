@@ -17,16 +17,22 @@ class AnswerFormFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_answer_form, container, false)
+        return inflater.inflate(R.layout.fragment_answer_form, container, false)
+    }
 
-        val btnSubmitAnswer = rootView.findViewById(R.id.btnSubmitAnswerForm) as MaterialButton?
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        btnSubmitAnswer?.setOnClickListener {
-            Snackbar.make(rootView, "Answer saved to DB", Snackbar.LENGTH_LONG).show()
-            findNavController().navigate(R.id.action_answerFormFragment_to_listOfAnswersToQuestionFragment)
+        arguments?.apply {
+            val quizID = AnswerFormFragmentArgs.fromBundle(this).questionID
+            val btnSubmitAnswer = view.findViewById(R.id.btnSubmitAnswerForm) as MaterialButton?
+
+            btnSubmitAnswer?.setOnClickListener {
+                Snackbar.make(view, "Answer saved to DB", Snackbar.LENGTH_LONG).show()
+                val action = AnswerFormFragmentDirections.actionAnswerFormFragmentToListOfAnswersToQuestionFragment(quizID)
+                findNavController().navigate(action)
+            }
         }
-
-        return rootView
     }
 
     companion object {

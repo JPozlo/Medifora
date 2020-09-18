@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,9 +22,19 @@ import timber.log.Timber
 
 class ListOfAnswersToQuestionFragment : Fragment() {
 
-
     private lateinit var adapter: AnswersListToQuestionAdapter
     private lateinit var answersToQuizArrayList: List<Answer>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val callback: OnBackPressedCallback = object: OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                findNavController().navigate(R.id.action_listOfAnswersToQuestionFragment_to_homeFragment)
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +78,8 @@ class ListOfAnswersToQuestionFragment : Fragment() {
             ListOfAnswersToQuestionFragment().apply {
                ListOfAnswersToQuestionFragment()
             }
+
+        private const val TAG = "LIST OF ANSWERS TO QUESTION FRAGMENT"
     }
 
     private fun setupRecyclerview(rootView: View?, answersToQuizList: List<Answer>) {

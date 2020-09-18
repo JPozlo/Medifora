@@ -12,6 +12,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.Question
+import com.misolova.medifora.util.TestData
 import com.misolova.medifora.util.adapters.AnswerRequestAdapter
 import com.misolova.medifora.util.adapters.HomeFeedAdapter
 import timber.log.Timber
@@ -19,7 +20,7 @@ import timber.log.Timber
 class AnswerRequestFragment : Fragment() {
 
     private lateinit var adapter: AnswerRequestAdapter
-    private lateinit var questionsArrayList: List<Question>
+    private var questionsArrayList: ArrayList<Question> = TestData().questionsArrayList
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,10 +28,21 @@ class AnswerRequestFragment : Fragment() {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_answer_request, container, false)
 
-        setupRecyclerview(rootView)
-
+        setupRecyclerview(rootView, listOf())
         adapter.notifyDataSetChanged()
+
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val questions = questionsArrayList.filter {
+            it.totalAnswersNumber <= 0
+        }
+
+        setupRecyclerview(view, questions)
+        adapter.notifyDataSetChanged()
     }
 
     companion object {
@@ -39,12 +51,14 @@ class AnswerRequestFragment : Fragment() {
             AnswerRequestFragment().apply {
                 AnswerRequestFragment()
             }
+
+        private const val TAG  = "ANSWER REQUEST FRAGMENT"
     }
 
-    private fun setupRecyclerview(rootView: View?) {
+    private fun setupRecyclerview(rootView: View?, quizList: List<Question>) {
         val recyclerView = rootView?.findViewById(R.id.recyclerViewAnswerRequest) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        adapter = AnswerRequestAdapter(questionsArrayList, navController = findNavController())
+        adapter = AnswerRequestAdapter(quizList, findNavController())
         recyclerView.adapter = adapter
     }
 }

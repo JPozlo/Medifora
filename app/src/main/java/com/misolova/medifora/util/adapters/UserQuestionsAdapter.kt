@@ -12,27 +12,16 @@ import kotlinx.android.synthetic.main.fragment_user_questions_item.view.*
 
 class UserQuestionsAdapter(
     private val userQuestionsArrayList: List<Question>,
-    private val navController: NavController
+    private val navController: NavController,
+    private val itemClick: (Int) -> Unit
 ) : RecyclerView.Adapter<UserQuestionsAdapter.UserQuestionsViewHolder>() {
 
-    inner class UserQuestionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-        View.OnClickListener {
+    inner class UserQuestionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         private var view: View = itemView
 
         init {
-            itemView.setOnClickListener(this)
+            itemView.setOnClickListener { itemClick(adapterPosition) }
         }
-
-        override fun onClick(v: View?) {
-            Snackbar.make(
-                itemView,
-                "Card item clicked for author: ${itemView.tvUserQuestionsTitleItem.text}",
-                Snackbar.LENGTH_LONG
-            ).show()
-            navController.navigate(R.id.action_userQuestionsFragment_to_listOfAnswersToQuestionFragment)
-
-        }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserQuestionsViewHolder {
@@ -45,7 +34,7 @@ class UserQuestionsAdapter(
     override fun onBindViewHolder(holder: UserQuestionsViewHolder, position: Int) {
         val question = userQuestionsArrayList[position]
         holder.itemView.tvUserQuestionsTitleItem.text = question.content
-        holder.itemView.tvUserQuestionsTopAnswerPreviewItem.text = question.content
+        holder.itemView.tvUserQuestionsTopAnswerPreviewItem.text = "Placeholder Top Answer Preview"
         holder.itemView.tvUserQuestionAnswersCountItem.text = question.totalAnswersNumber.toString()
     }
 }
