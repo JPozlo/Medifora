@@ -47,8 +47,9 @@ class ListOfAnswersToQuestionFragment : Fragment() {
 
         var progressBar = view.findViewById(R.id.progressBarListOfAnswersToQuizFragment) as ProgressBar?
 
+
         arguments?.apply {
-            var questionID = getInt(QUESTION_ID_BUNDLE_KEY_VALUE)
+            var questionID = ListOfAnswersToQuestionFragmentArgs.fromBundle(this).questionID
             tvListOfAnswersToQuestionTitle?.text = questionID.toString()
             answersToQuizArrayList = TestData().userAnswersArrayList.filter {
                 it.questionID == questionID

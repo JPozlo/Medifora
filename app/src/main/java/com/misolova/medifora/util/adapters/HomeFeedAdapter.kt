@@ -13,27 +13,23 @@ import com.misolova.medifora.domain.Question
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_home_item.view.*
 import timber.log.Timber
+import java.util.*
 
 class HomeFeedAdapter(private val homeQuestionsArrayList: List<Question>,
-                      private val bundle: Bundle,
-                      private val resID: Int,
-                      private val navController: NavController):
+                      private val itemClick: (Int) -> Unit):
     RecyclerView.Adapter<HomeFeedAdapter.HomeFeedViewHolder>() {
 
-    inner class HomeFeedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnClickListener{
-        private var view: View = itemView
-        private var question: Question? = null
+    inner class HomeFeedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         init {
-            itemView.setOnClickListener(this)
+//            itemView.setOnClickListener(this)
+            itemView.setOnClickListener { itemClick(adapterPosition) }
         }
 
-        override fun onClick(v: View?) {
-            Timber.i("HomeFeed RecyclerView: CLICK!")
-            val context = itemView.context
-            Snackbar.make(itemView, "Card item clicked by author: ${itemView.tvHomeFeedAnswerAuthorItem.text}", Snackbar.LENGTH_LONG).show()
-            navController.navigate(resID, bundle)
-        }
+//        override fun onClick(v: View?) {
+//            Timber.i("HomeFeed RecyclerView: CLICK!")
+//            navController.navigate(navDirections)
+//        }
 
     }
 
@@ -53,4 +49,5 @@ class HomeFeedAdapter(private val homeQuestionsArrayList: List<Question>,
         holder.itemView.tvHomeFeedAnswerAuthorItem.text = question.author
         holder.itemView.tvHomeFeedAnswersItem.text = "Placeholder Answer Content"
     }
+
 }
