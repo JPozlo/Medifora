@@ -6,19 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.Answer
-import com.misolova.medifora.util.Constants.QUESTION_ID_BUNDLE_KEY_VALUE
+import com.misolova.medifora.domain.model.Answer
 import com.misolova.medifora.util.TestData
 import com.misolova.medifora.util.adapters.AnswersListToQuestionAdapter
 import kotlinx.android.synthetic.main.fragment_list_of_answers_to_question.*
-import timber.log.Timber
 
 class ListOfAnswersToQuestionFragment : Fragment() {
 

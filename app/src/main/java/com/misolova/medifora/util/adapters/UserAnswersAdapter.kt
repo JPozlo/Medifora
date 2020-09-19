@@ -2,12 +2,11 @@ package com.misolova.medifora.util.adapters
 
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.Answer
+import com.misolova.medifora.domain.model.Answer
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_user_answers_item.view.*
 import timber.log.Timber

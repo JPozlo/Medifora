@@ -10,12 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.Answer
+import com.misolova.medifora.domain.model.Answer
 import com.misolova.medifora.util.TestData
-import com.misolova.medifora.util.adapters.AnswersListToQuestionAdapter
 import com.misolova.medifora.util.adapters.UserAnswersAdapter
-import kotlinx.android.synthetic.main.fragment_user_answers.*
-import kotlinx.android.synthetic.main.fragment_user_answers_item.*
 import timber.log.Timber
 
 class UserAnswersFragment : Fragment() {

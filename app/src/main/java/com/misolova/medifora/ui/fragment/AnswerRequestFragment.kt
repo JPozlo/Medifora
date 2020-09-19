@@ -8,14 +8,10 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.Question
+import com.misolova.medifora.domain.model.Question
 import com.misolova.medifora.util.TestData
 import com.misolova.medifora.util.adapters.AnswerRequestAdapter
-import com.misolova.medifora.util.adapters.HomeFeedAdapter
-import timber.log.Timber
 
 class AnswerRequestFragment : Fragment() {
 

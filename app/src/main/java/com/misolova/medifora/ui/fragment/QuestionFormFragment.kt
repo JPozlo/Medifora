@@ -10,10 +10,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.Question
-import kotlin.jvm.internal.Intrinsics
+import com.misolova.medifora.domain.model.Question
 import kotlin.random.Random
-import kotlin.random.asJavaRandom
 
 class QuestionFormFragment : Fragment() {
 
@@ -33,7 +31,14 @@ class QuestionFormFragment : Fragment() {
 
         val rand  = Random
 
-        question = Question(rand.nextLong(1, 500).toInt(), questionDetails, arrayListOf(), 0, "Current user", "12/09/2020")
+        question = Question(
+            rand.nextLong(1, 500).toInt(),
+            questionDetails,
+            arrayListOf(),
+            0,
+            "Current user",
+            "12/09/2020"
+        )
 
 
         val action = QuestionFormFragmentDirections.actionQuestionFormFragmentToListOfAnswersToQuestionFragment(questionID = question.ID)

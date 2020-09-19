@@ -1,19 +1,12 @@
 package com.misolova.medifora.util.adapters
 
-import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.IdRes
-import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.Question
+import com.misolova.medifora.domain.model.Question
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_home_item.view.*
-import timber.log.Timber
-import java.util.*
 
 class HomeFeedAdapter(private val homeQuestionsArrayList: List<Question>,
                       private val itemClick: (Int) -> Unit):

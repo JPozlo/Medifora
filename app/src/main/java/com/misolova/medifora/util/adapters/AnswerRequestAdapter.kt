@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.Question
+import com.misolova.medifora.domain.model.Question
 import com.misolova.medifora.ui.fragment.AnswerRequestFragmentDirections
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_answer_request_item.view.*

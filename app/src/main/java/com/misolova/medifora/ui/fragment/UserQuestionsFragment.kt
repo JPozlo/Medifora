@@ -9,12 +9,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.Question
+import com.misolova.medifora.domain.model.Question
 import com.misolova.medifora.util.TestData
-import com.misolova.medifora.util.adapters.UserAnswersAdapter
 import com.misolova.medifora.util.adapters.UserQuestionsAdapter
-import kotlinx.android.synthetic.main.fragment_user_questions.*
-import kotlinx.android.synthetic.main.fragment_user_questions_item.*
 import timber.log.Timber
 
 class UserQuestionsFragment : Fragment() {
