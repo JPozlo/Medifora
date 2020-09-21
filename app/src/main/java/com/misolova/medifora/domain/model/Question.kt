@@ -9,4 +9,5 @@ data class Question(
     val authorID: Int,
     val createdAt: Long
 ) {
+    val ID: Int? = null
 }

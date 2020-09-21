@@ -5,23 +5,14 @@ import java.sql.Date
 
 @Fts4
 @Entity(
-    tableName = "question_table",
-    indices = [Index("totalNumberOfAnswers"), Index("createdAt")],
-    foreignKeys = [
-        ForeignKey(entity = UserEntity::class, parentColumns = ["id"], childColumns = ["authorID"])
-    ]
+    tableName = "question_table"
 )
-data class QuestionEntity(
-    val content: String,
-    val answerIDs: List<Int>,
-    val answers: List<AnswerEntity>,
-    val totalNumberOfAnswers: Int,
-    val authorID: Int,
-    @Embedded
-    val author: UserEntity,
-    val createdAt: Date
+data class QuestionEntity @JvmOverloads constructor(
+    var questionContent: String,
+    var questionAuthorID: Int?,
+    var questionCreatedAt: Date
 ) {
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "rowid")
-    val id: Int? = null
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "rowid") var questionID: Int? = null
+    var questionAnswerIDs: List<Int>? = null
+    var totalNumberOfAnswers: Int? = null
 }

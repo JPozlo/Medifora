@@ -7,28 +7,35 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.model.Answer
-import com.misolova.medifora.util.TestData
+import com.misolova.medifora.data.source.local.entities.AnswerEntity
+import com.misolova.medifora.ui.viewmodel.MainViewModel
 import com.misolova.medifora.util.adapters.AnswersListToQuestionAdapter
 import kotlinx.android.synthetic.main.fragment_list_of_answers_to_question.*
 
 class ListOfAnswersToQuestionFragment : Fragment() {
 
+    private val viewModel: MainViewModel by viewModels()
+
     private lateinit var adapter: AnswersListToQuestionAdapter
-    private lateinit var answersToQuizArrayList: List<Answer>
+    private lateinit var answersToQuizArrayList: List<AnswerEntity>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val callback: OnBackPressedCallback = object: OnBackPressedCallback(true){
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                findNavController().navigate(R.id.action_listOfAnswersToQuestionFragment_to_homeFragment)
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.homeFragment, true)
+                    .build()
+                findNavController().navigate(R.id.action_listOfAnswersToQuestionFragment_to_homeFragment, savedInstanceState, navOptions)
             }
         }
-
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
@@ -36,13 +43,15 @@ class ListOfAnswersToQuestionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_list_of_answers_to_question, container, false)
+        val rootView =
+            inflater.inflate(R.layout.fragment_list_of_answers_to_question, container, false)
 
         setupRecyclerview(rootView, listOf())
 
         adapter.notifyDataSetChanged()
 
-        var progressBar = rootView.findViewById(R.id.progressBarListOfAnswersToQuizFragment) as ProgressBar?
+        var progressBar =
+            rootView.findViewById(R.id.progressBarListOfAnswersToQuizFragment) as ProgressBar?
 
         progressBar?.visibility = View.VISIBLE
         progressBar?.isIndeterminate = true
@@ -53,18 +62,18 @@ class ListOfAnswersToQuestionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var progressBar = view.findViewById(R.id.progressBarListOfAnswersToQuizFragment) as ProgressBar?
-
+        var progressBar =
+            view.findViewById(R.id.progressBarListOfAnswersToQuizFragment) as ProgressBar?
 
         arguments?.apply {
             var questionID = ListOfAnswersToQuestionFragmentArgs.fromBundle(this).questionID
             tvListOfAnswersToQuestionTitle?.text = questionID.toString()
-            answersToQuizArrayList = TestData().userAnswersArrayList.filter {
-                it.questionID == questionID
-            }
-            progressBar?.visibility = View.GONE
-            setupRecyclerview(view, answersToQuizArrayList)
-            adapter.notifyDataSetChanged()
+            viewModel.getAnswersToQuestion(questionID).observe(viewLifecycleOwner, Observer {
+                answersToQuizArrayList = it
+                progressBar?.visibility = View.GONE
+                setupRecyclerview(view, answersToQuizArrayList)
+                adapter.notifyDataSetChanged()
+            })
         }
     }
 
@@ -72,16 +81,17 @@ class ListOfAnswersToQuestionFragment : Fragment() {
         @JvmStatic
         fun newInstance() =
             ListOfAnswersToQuestionFragment().apply {
-               ListOfAnswersToQuestionFragment()
+                ListOfAnswersToQuestionFragment()
             }
 
         private const val TAG = "LIST OF ANSWERS TO QUESTION FRAGMENT"
     }
 
-    private fun setupRecyclerview(rootView: View?, answersToQuizList: List<Answer>) {
-        val recyclerView = rootView?.findViewById(R.id.recyclerViewListOfAnswersToQuestion) as RecyclerView
+    private fun setupRecyclerview(rootView: View?, answersToQuiz: List<AnswerEntity>) {
+        val recyclerView =
+            rootView?.findViewById(R.id.recyclerViewListOfAnswersToQuestion) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        adapter = AnswersListToQuestionAdapter(answersToQuizList)
+        adapter = AnswersListToQuestionAdapter(answersToQuiz)
         recyclerView.adapter = adapter
     }
 }

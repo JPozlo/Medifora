@@ -1,9 +1,7 @@
 package com.misolova.medifora.data.repo
 
 import androidx.lifecycle.LiveData
-import com.misolova.medifora.data.source.local.entities.AnswerEntity
-import com.misolova.medifora.data.source.local.entities.QuestionEntity
-import com.misolova.medifora.data.source.local.entities.UserEntity
+import com.misolova.medifora.data.source.local.entities.*
 
 interface MediforaRepositoryInterface {
 
@@ -15,6 +13,8 @@ interface MediforaRepositoryInterface {
 
     suspend fun deleteAnswer(answerEntity: AnswerEntity)
 
+    fun getAnswer(id: Int): LiveData<AnswerEntity>
+
     fun getAnswersToQuestion(questionID: Int): LiveData<List<AnswerEntity>>
 
     fun getUserAnswers(userID: Int): LiveData<List<AnswerEntity>>
@@ -25,7 +25,7 @@ interface MediforaRepositoryInterface {
 
     fun getAnswersSortByDateCreated(): LiveData<List<AnswerEntity>>
 
-    fun getAnswerVotes(answerID: Int): LiveData<Int>
+//    fun getAnswerVotes(answerID: Int): LiveData<Int>
 
     /**
      * Functions for QuestionEntity
@@ -35,11 +35,15 @@ interface MediforaRepositoryInterface {
 
     suspend fun deleteQuestion(questionEntity: QuestionEntity)
 
+    fun getQuestion(id: Int): LiveData<QuestionEntity>
+
     fun getQuestionsWithZeroAnswers(): LiveData<List<QuestionEntity>>
 
     fun getUserQuestions(userID: Int): LiveData<List<QuestionEntity>>
 
     fun getAllQuestions(): LiveData<List<QuestionEntity>>
+
+    fun getTotalNumberOfAnswers(questionID: Int): LiveData<Int>
 
     fun getQuestionsSortByNumberOfAnswers(): LiveData<List<QuestionEntity>>
 
@@ -53,5 +57,17 @@ interface MediforaRepositoryInterface {
 
     suspend fun deleteUser(userEntity: UserEntity)
 
-    fun getUserDetails(userID: Int): UserEntity
+    fun getUserDetails(userID: Int): LiveData<UserEntity>
+
+    /**
+     * Functions for Nested Relationship
+     * */
+
+    fun getUserWithQuestionsAnswers(): LiveData<List<UserQuestionAnswersEntity>>
+
+//    fun getQuestionWithAnswers(): LiveData<List<QuestionAnswerEntity>>
+
+    fun getUserWithAnswers(): LiveData<List<UserAnswerEntity>>
+
+
 }

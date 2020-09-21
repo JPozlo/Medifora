@@ -10,13 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.Question
-import com.misolova.medifora.util.TestData
 import com.misolova.medifora.util.adapters.AnswerRequestAdapter
 
 class AnswerRequestFragment : Fragment() {
 
     private lateinit var adapter: AnswerRequestAdapter
-    private var questionsArrayList: ArrayList<Question> = TestData().questionsArrayList
+    private lateinit var questionsArrayList: ArrayList<Question>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +33,7 @@ class AnswerRequestFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val questions = questionsArrayList.filter {
-            it.totalAnswersNumber <= 0
+            it.totalNumberOfAnswers <= 0
         }
 
         setupRecyclerview(view, questions)

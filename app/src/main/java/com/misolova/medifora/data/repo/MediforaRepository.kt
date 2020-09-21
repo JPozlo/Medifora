@@ -12,6 +12,8 @@ class MediforaRepository @Inject constructor(private val mediforaDao: MediforaDa
 
     override suspend fun deleteAnswer(answerEntity: AnswerEntity)  = mediforaDao.deleteAnswer(answerEntity)
 
+    override fun getAnswer(id: Int): LiveData<AnswerEntity> = mediforaDao.getAnswer(id)
+
     override fun getAnswersToQuestion(questionID: Int): LiveData<List<AnswerEntity>> = mediforaDao.getAnswersToQuestion(questionID)
 
     override fun getUserAnswers(userID: Int): LiveData<List<AnswerEntity>>  = mediforaDao.getUserAnswers(userID)
@@ -22,17 +24,21 @@ class MediforaRepository @Inject constructor(private val mediforaDao: MediforaDa
 
     override fun getAnswersSortByDateCreated(): LiveData<List<AnswerEntity>>  = mediforaDao.getAnswersSortByDateCreated()
 
-    override fun getAnswerVotes(answerID: Int): LiveData<Int>  = mediforaDao.getAnswerVotes(answerID)
+//    override fun getAnswerVotes(answerID: Int): LiveData<Int>  = mediforaDao.getAnswerVotes(answerID)
 
     override suspend fun insertQuestion(questionEntity: QuestionEntity) = mediforaDao.insertQuestion(questionEntity)
 
     override suspend fun deleteQuestion(questionEntity: QuestionEntity) = mediforaDao.deleteQuestion(questionEntity)
+
+    override fun getQuestion(id: Int): LiveData<QuestionEntity> = mediforaDao.getQuestion(id)
 
     override fun getQuestionsWithZeroAnswers(): LiveData<List<QuestionEntity>>  = mediforaDao.getQuestionsWithZeroAnswers()
 
     override fun getUserQuestions(userID: Int): LiveData<List<QuestionEntity>> = mediforaDao.getUserQuestions(userID)
 
     override fun getAllQuestions(): LiveData<List<QuestionEntity>>  = mediforaDao.getAllQuestions()
+
+    override fun getTotalNumberOfAnswers(questionID: Int): LiveData<Int> = mediforaDao.getTotalNumberOfAnswers(questionID)
 
     override fun getQuestionsSortByNumberOfAnswers(): LiveData<List<QuestionEntity>> = mediforaDao.getQuestionsSortByNumberOfAnswers()
 
@@ -42,5 +48,9 @@ class MediforaRepository @Inject constructor(private val mediforaDao: MediforaDa
 
     override suspend fun deleteUser(userEntity: UserEntity) = mediforaDao.deleteUser(userEntity)
 
-    override fun getUserDetails(userID: Int): UserEntity = mediforaDao.getUserDetails(userID)
+    override fun getUserDetails(userID: Int): LiveData<UserEntity> = mediforaDao.getUserDetails(userID)
+
+    override fun getUserWithQuestionsAnswers(): LiveData<List<UserQuestionAnswersEntity>> = mediforaDao.getUserWithQuestionsAndAnswers()
+//    override fun getQuestionWithAnswers(): LiveData<List<QuestionAnswerEntity>> = mediforaDao.getQuestionWithAnswers()
+    override fun getUserWithAnswers(): LiveData<List<UserAnswerEntity>> = mediforaDao.getUserWithAnswers()
 }

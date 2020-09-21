@@ -2,16 +2,15 @@ package com.misolova.medifora.util.adapters
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
-import com.misolova.medifora.domain.model.Question
+import com.misolova.medifora.data.source.local.entities.UserQuestionAnswersEntity
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_user_questions_item.view.*
 
 class UserQuestionsAdapter(
-    private val userQuestionsArrayList: List<Question>,
-    private val navController: NavController,
+    private val userID: Int,
+    private val userQuestionsList: List<UserQuestionAnswersEntity>,
     private val itemClick: (Int) -> Unit
 ) : RecyclerView.Adapter<UserQuestionsAdapter.UserQuestionsViewHolder>() {
 
@@ -28,12 +27,15 @@ class UserQuestionsAdapter(
         return UserQuestionsViewHolder(inflatedView)
     }
 
-    override fun getItemCount() = userQuestionsArrayList.size
+    override fun getItemCount() = userQuestionsList.size
 
     override fun onBindViewHolder(holder: UserQuestionsViewHolder, position: Int) {
-        val question = userQuestionsArrayList[position]
-        holder.itemView.tvUserQuestionsTitleItem.text = question.content
+        val userQuestionAnswersEntity = userQuestionsList[position]
+       val filteredUserQuestionAnswersEntity = userQuestionAnswersEntity.questions.filter {
+            it.question.questionAuthorID == userID
+        }
+        holder.itemView.tvUserQuestionsTitleItem.text = filteredUserQuestionAnswersEntity[0].question.questionContent
         holder.itemView.tvUserQuestionsTopAnswerPreviewItem.text = "Placeholder Top Answer Preview"
-        holder.itemView.tvUserQuestionAnswersCountItem.text = question.totalAnswersNumber.toString()
+        holder.itemView.tvUserQuestionAnswersCountItem.text = filteredUserQuestionAnswersEntity[0].question.totalNumberOfAnswers.toString()
     }
 }

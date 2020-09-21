@@ -33,7 +33,7 @@ class AnswerRequestAdapter(private val questionsAnswerRequest: List<Question>, p
         val questionID = question.ID
         holder.itemView.btnAnswerRequestConfirm.setOnClickListener {
             Timber.d("$TAG: Adapter Question ID: $questionID")
-            val action = AnswerRequestFragmentDirections.actionAnswerRequestFragmentToAnswerFormFragment(questionID)
+            val action = AnswerRequestFragmentDirections.actionAnswerRequestFragmentToAnswerFormFragment(questionID!!)
             navController.navigate(action)
         }
     }

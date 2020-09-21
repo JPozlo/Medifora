@@ -69,4 +69,20 @@ class TypeConverter {
         val type = object: TypeToken<List<AnswerEntity>>(){}.type
         return gson.fromJson(objectString, type)
     }
+
+    @TypeConverter
+    fun fromAnswerIDList(list: List<Int>): String{
+        if( list == null) return  ""
+        val gson: Gson = Gson()
+        val type = object: TypeToken<List<Int>>(){}.type
+        return gson.toJson(list, type)
+    }
+
+    @TypeConverter
+    fun toAnswerIDList(objectString: String): List<Int> {
+        if(objectString == null) return listOf()
+        val gson = Gson()
+        val type = object: TypeToken<List<Int>>(){}.type
+        return gson.fromJson(objectString, type)
+    }
 }

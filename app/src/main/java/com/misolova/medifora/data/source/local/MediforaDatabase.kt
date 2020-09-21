@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.misolova.medifora.data.source.local.entities.*
 import com.misolova.medifora.data.util.TypeConverter
 
-@Database(entities = [AnswerEntity::class, QuestionEntity::class, UserEntity::class], version = 1)
+@Database( entities = [AnswerEntity::class, QuestionEntity::class, UserEntity::class], version = 1)
 @TypeConverters(TypeConverter::class)
 abstract class MediforaDatabase: RoomDatabase(){
 
