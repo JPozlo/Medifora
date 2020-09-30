@@ -12,13 +12,12 @@ import java.sql.Date
     indices = [Index("email", unique = true)]
 )
 data class UserEntity @JvmOverloads constructor(
+    @PrimaryKey(autoGenerate = false) var userID: Int,
     var name: String,
     var email: String,
     var password: String,
     var accountCreatedAt: Date
 ){
-    @PrimaryKey(autoGenerate = true) var userID: Int? = null
-    var photo: Bitmap? = null
     var userQuestions: List<QuestionEntity>? = null
     var userAnswers: List<AnswerEntity>? = null
 }

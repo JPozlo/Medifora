@@ -1,0 +1,114 @@
+package com.misolova.medifora.ui.home.viewmodel
+
+import android.content.SharedPreferences
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.misolova.medifora.data.repo.MediforaRepository
+import com.misolova.medifora.data.source.local.entities.AnswerEntity
+import com.misolova.medifora.data.source.local.entities.QuestionEntity
+import com.misolova.medifora.data.source.remote.FirebaseProfileService
+import com.misolova.medifora.domain.model.Answer
+import com.misolova.medifora.domain.model.AnswerInfo
+import com.misolova.medifora.domain.model.QuestionInfo
+import com.misolova.medifora.domain.model.User
+import com.misolova.medifora.util.Constants.KEY_USER_ID
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
+import kotlin.time.ExperimentalTime
+
+@ExperimentalCoroutinesApi
+@ExperimentalTime
+class MainViewModel @ViewModelInject constructor(
+    private val mediforaRepository: MediforaRepository
+): ViewModel() {
+
+    companion object{
+        private const val TAG = "MAIN_VIEW_MODEL"
+    }
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    val questionID = MutableLiveData<String>()
+
+    fun setQuestionId(questionId: String){
+        questionID.setValue(questionId)
+    }
+
+    fun getQuestionId() = questionID.value!!
+
+
+    private val _userProfile = MutableLiveData<User>()
+    val userProfile: LiveData<User> = _userProfile
+    private val _homeFeedQuestions = MutableLiveData<List<QuestionInfo>>()
+    val homeFeedQuestions: LiveData<List<QuestionInfo>> = _homeFeedQuestions
+    private val _userQuestions = MutableLiveData<List<QuestionInfo>>()
+    val userQuestions: LiveData<List<QuestionInfo>> = _userQuestions
+    private val _answers = MutableLiveData<List<Answer>>()
+    val answers: LiveData<List<Answer>> = _answers
+    private val _answersToQuiz = MutableLiveData<List<AnswerInfo>>()
+    val answersToQuiz: LiveData<List<AnswerInfo>> = _answersToQuiz
+    private val _userAnswers = MutableLiveData<List<AnswerInfo>>()
+    val userAnswers: LiveData<List<AnswerInfo>> = _userAnswers
+    private val _questionById = MutableLiveData<QuestionInfo>()
+    val questionById: LiveData<QuestionInfo> = _questionById
+
+    val user by lazy {
+        FirebaseAuth.getInstance().currentUser
+    }
+
+    val logout =
+        mediforaRepository.logout()
+
+    init {
+        viewModelScope.launch {
+            FirebaseProfileService.getQuestions().collect {value ->
+                _homeFeedQuestions.value = value
+            }
+            FirebaseProfileService.getUserQuestions(getUserId()).collect{value ->
+                _userQuestions.value = value
+            }
+            FirebaseProfileService.getUserAnswers(getUserId()).collect{value ->
+                _userAnswers.value = value
+            }
+            FirebaseProfileService.getAnswersToQuestion(questionId = getQuestionId()).collect{ value ->
+                _answersToQuiz.value = value
+            }
+            FirebaseProfileService.getQuestionById(questionId = getQuestionId()).collect { value ->
+                _questionById.value = value
+            }
+        }
+    }
+
+    private fun getUserId() =
+        sharedPreferences.getString(KEY_USER_ID, "")!!
+
+
+    fun addQuestion(question: QuestionInfo) = viewModelScope.launch {
+        FirebaseProfileService.createQuestion(question).collect { value ->
+            Timber.d("$TAG: Results of adding question -> ${value.get().result}")
+        }
+    }
+
+    fun addAnswer(answer: AnswerInfo, questionId: String) = viewModelScope.launch {
+        FirebaseProfileService.createAnswer(answer, questionId).collect{ value ->
+                Timber.d("$TAG: Results of adding answer -> ${value.get().result}")
+            }
+    }
+
+    fun deleteQuestion(questionEntity: QuestionEntity) = viewModelScope.launch {
+        mediforaRepository.deleteQuestion(questionEntity)
+    }
+
+    fun deleteAnswer(answerEntity: AnswerEntity) = viewModelScope.launch {
+        mediforaRepository.deleteAnswer(answerEntity)
+    }
+
+}

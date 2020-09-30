@@ -82,6 +82,9 @@ interface MediforaDao {
     @Query("SELECT * FROM user_table WHERE userID == :userID")
     fun getUserDetails(userID: Int): LiveData<UserEntity>
 
+    @Query("SELECT email FROM user_table")
+    fun getAllUsernames(): LiveData<List<String>>
+
     /**
      * DAO functions for Relational Entities
      * */

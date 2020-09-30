@@ -1,17 +1,19 @@
-package com.misolova.medifora.ui.fragment
+package com.misolova.medifora.ui.home.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.Question
 import com.misolova.medifora.util.adapters.AnswerRequestAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AnswerRequestFragment : Fragment() {
 
     private lateinit var adapter: AnswerRequestAdapter
@@ -33,7 +35,7 @@ class AnswerRequestFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val questions = questionsArrayList.filter {
-            it.totalNumberOfAnswers <= 0
+            it.questionInfo.totalNumberOfAnswers <= 0
         }
 
         setupRecyclerview(view, questions)

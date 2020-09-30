@@ -14,32 +14,32 @@ class TypeConverter {
 
     // Converter functions for bitmap transformation into DB-Compatible-Format and vice versa
 
-    @TypeConverter
-    fun fromBitmap(bitmap: Bitmap): ByteArray{
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        return outputStream.toByteArray()
-    }
-
-    @TypeConverter
-    fun toBitmap(byteArray: ByteArray): Bitmap {
-        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-    }
+//    @TypeConverter
+//    fun fromBitmap(bitmap: Bitmap?): ByteArray{
+//        val outputStream = ByteArrayOutputStream()
+//        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+//        return outputStream.toByteArray()
+//    }
+//
+//    @TypeConverter
+//    fun toBitmap(byteArray: ByteArray?): Bitmap {
+//        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray?.size!!)
+//    }
 
     // Converter functions for Date transformation into Long Format and vice versa
 
     @TypeConverter
-    fun fromDate(date: Date): Long{
-        return date.time
+    fun fromDate(date: Date?): Long{
+        return date?.time!!
     }
 
     @TypeConverter
-    fun toDate(long: Long): Date{
-        return Date(long)
+    fun toDate(long: Long?): Date{
+        return Date(long!!)
     }
 
     @TypeConverter
-    fun fromQuestionEntityList(list: List<QuestionEntity>): String{
+    fun fromQuestionEntityList(list: List<QuestionEntity>?): String?{
         if( list == null) return  ""
         val gson: Gson = Gson()
         val type = object: TypeToken<List<QuestionEntity>>(){}.type
@@ -47,7 +47,7 @@ class TypeConverter {
     }
 
     @TypeConverter
-    fun toQuestionEntityList(objectString: String): List<QuestionEntity> {
+    fun toQuestionEntityList(objectString: String?): List<QuestionEntity>? {
         if(objectString == null) return listOf()
         val gson = Gson()
         val type = object: TypeToken<List<QuestionEntity>>(){}.type
@@ -55,7 +55,7 @@ class TypeConverter {
     }
 
     @TypeConverter
-    fun fromAnswerEntityList(list: List<AnswerEntity>): String{
+    fun fromAnswerEntityList(list: List<AnswerEntity>?): String?{
         if( list == null) return  ""
         val gson: Gson = Gson()
         val type = object: TypeToken<List<AnswerEntity>>(){}.type
@@ -63,7 +63,7 @@ class TypeConverter {
     }
 
     @TypeConverter
-    fun toAnswerEntityList(objectString: String): List<AnswerEntity> {
+    fun toAnswerEntityList(objectString: String?): List<AnswerEntity>? {
         if(objectString == null) return listOf()
         val gson = Gson()
         val type = object: TypeToken<List<AnswerEntity>>(){}.type
@@ -71,7 +71,7 @@ class TypeConverter {
     }
 
     @TypeConverter
-    fun fromAnswerIDList(list: List<Int>): String{
+    fun fromAnswerIDList(list: List<Int>?): String?{
         if( list == null) return  ""
         val gson: Gson = Gson()
         val type = object: TypeToken<List<Int>>(){}.type
@@ -79,7 +79,7 @@ class TypeConverter {
     }
 
     @TypeConverter
-    fun toAnswerIDList(objectString: String): List<Int> {
+    fun toAnswerIDList(objectString: String?): List<Int>? {
         if(objectString == null) return listOf()
         val gson = Gson()
         val type = object: TypeToken<List<Int>>(){}.type

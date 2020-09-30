@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="6dp"
-    tools:context=".ui.fragment.AnswerRequestFragment">
+    tools:context="com.misolova.medifora.ui.home.fragment.AnswerRequestFragment">
 
     <TextView
         android:id="@+id/tvAnswerRequestPageTitle"

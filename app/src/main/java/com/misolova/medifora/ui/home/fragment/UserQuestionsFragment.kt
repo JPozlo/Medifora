@@ -1,43 +1,47 @@
-package com.misolova.medifora.ui.fragment
+package com.misolova.medifora.ui.home.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
-import com.misolova.medifora.data.source.local.entities.QuestionAnswerEntity
-import com.misolova.medifora.data.source.local.entities.UserQuestionAnswersEntity
-import com.misolova.medifora.domain.model.Question
-import com.misolova.medifora.ui.viewmodel.MainViewModel
+import com.misolova.medifora.domain.model.QuestionInfo
+import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.adapters.UserQuestionsAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import kotlin.time.ExperimentalTime
 
+@AndroidEntryPoint
+@ExperimentalTime
 class UserQuestionsFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
 
     private lateinit var adapter: UserQuestionsAdapter
-    private lateinit var userQuestionsAnswersList: List<UserQuestionAnswersEntity>
+    private lateinit var userQuestionsAnswersList: List<QuestionInfo>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        return inflater.inflate(R.layout.fragment_user_questions, container, false)
+    }
 
-        val rootView = inflater.inflate(R.layout.fragment_user_questions, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        setupRecyclerViewData(listOf())
-
-        val userQuestions = viewModel.userWithQuestionsAndAnswers
+        val userQuestions = viewModel.userQuestions
         userQuestions.observe(viewLifecycleOwner, Observer {
             userQuestionsAnswersList = it
+            Timber.d("$TAG: The count for adapter items -> ${it.count()}")
             if(it.count() > 0){
                 setupRecyclerViewData(userQuestionsAnswersList)
             } else {
@@ -45,7 +49,6 @@ class UserQuestionsFragment : Fragment() {
             }
         })
 
-        return rootView
     }
 
     companion object {
@@ -71,21 +74,20 @@ class UserQuestionsFragment : Fragment() {
         })
     }
 
-    private fun setupRecyclerViewData(quizList: List<UserQuestionAnswersEntity>) {
+    private fun setupRecyclerViewData(quizList: List<QuestionInfo>) {
         setupRecyclerview(view, quizList)
         adapter.notifyDataSetChanged()
     }
 
-    private fun setupRecyclerview(rootView: View?, userQuizList: List<UserQuestionAnswersEntity>) {
-        val recyclerView = rootView?.findViewById(R.id.recyclerViewUserQuestions) as RecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        val userID = 0
-        adapter = UserQuestionsAdapter(userID, userQuizList){position ->
-            val questionID = userQuizList[position].questions[0].question.questionID
+    private fun setupRecyclerview(rootView: View?, userQuizList: List<QuestionInfo>) {
+        val recyclerView = rootView?.findViewById(R.id.recyclerViewUserQuestions) as RecyclerView?
+        recyclerView?.layoutManager = LinearLayoutManager(activity)
+        adapter = UserQuestionsAdapter(userQuizList){position ->
+            val questionID = userQuizList[position].questionId
             Timber.d("$TAG: Question ID is $questionID")
-            val action = UserQuestionsFragmentDirections.actionUserQuestionsFragmentToListOfAnswersToQuestionFragment(questionID!!)
+            val action = UserQuestionsFragmentDirections.actionUserQuestionsFragmentToListOfAnswersToQuestionFragment(questionID)
             findNavController().navigate(action)
         }
-        recyclerView.adapter = adapter
+        recyclerView?.adapter = adapter
     }
 }

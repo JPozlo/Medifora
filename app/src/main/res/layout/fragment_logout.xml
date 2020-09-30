@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="6sp"
-    tools:context=".ui.fragment.LogoutFragment">
+    tools:context="com.misolova.medifora.ui.home.fragment.LogoutFragment">
 
     <TextView
         android:id="@+id/tvLogoutConfirmation"
@@ -19,13 +19,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8sp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnConfirmLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Yes" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

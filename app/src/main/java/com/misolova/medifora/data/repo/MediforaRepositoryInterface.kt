@@ -1,7 +1,11 @@
 package com.misolova.medifora.data.repo
 
 import androidx.lifecycle.LiveData
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseUser
 import com.misolova.medifora.data.source.local.entities.*
+import io.reactivex.Completable
 
 interface MediforaRepositoryInterface {
 
@@ -68,6 +72,20 @@ interface MediforaRepositoryInterface {
 //    fun getQuestionWithAnswers(): LiveData<List<QuestionAnswerEntity>>
 
     fun getUserWithAnswers(): LiveData<List<UserAnswerEntity>>
+
+    fun getAllUsers(): LiveData<List<String>>
+
+    /**
+     * Functions for Nested Relationship
+     * */
+
+    fun login(email: String, password: String): Task<AuthResult>
+
+    fun register(email: String, password: String): Task<AuthResult>
+
+    fun currentUser(): FirebaseUser?
+
+    fun logout()
 
 
 }

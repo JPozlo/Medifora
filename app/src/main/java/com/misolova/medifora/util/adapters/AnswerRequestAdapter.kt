@@ -6,7 +6,7 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.Question
-import com.misolova.medifora.ui.fragment.AnswerRequestFragmentDirections
+import com.misolova.medifora.ui.home.fragment.AnswerRequestFragmentDirections
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_answer_request_item.view.*
 import timber.log.Timber
@@ -29,8 +29,8 @@ class AnswerRequestAdapter(private val questionsAnswerRequest: List<Question>, p
 
     override fun onBindViewHolder(holder: AnswerRequestViewHolder, position: Int) {
         val question = questionsAnswerRequest[position]
-        holder.itemView.tvAnswerRequestQuestionTitle.text = question.content
-        val questionID = question.ID
+        holder.itemView.tvAnswerRequestQuestionTitle.text = question.questionInfo.questionContent
+        val questionID = question.questionInfo.questionId
         holder.itemView.btnAnswerRequestConfirm.setOnClickListener {
             Timber.d("$TAG: Adapter Question ID: $questionID")
             val action = AnswerRequestFragmentDirections.actionAnswerRequestFragmentToAnswerFormFragment(questionID!!)

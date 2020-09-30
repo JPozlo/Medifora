@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10sp"
-    tools:context=".ui.fragment.AccountFragment">
+    tools:context="com.misolova.medifora.ui.home.fragment.AccountFragment">
 
     <TextView
         android:id="@+id/tvLegalTerms"

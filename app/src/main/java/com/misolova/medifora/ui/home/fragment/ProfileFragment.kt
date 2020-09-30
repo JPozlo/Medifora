@@ -1,4 +1,4 @@
-package com.misolova.medifora.ui.fragment
+package com.misolova.medifora.ui.home.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,10 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
     override fun onCreateView(

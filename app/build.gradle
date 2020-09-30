@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 29
@@ -37,6 +39,8 @@ android {
 
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     def kotlin_coroutines_version = "1.3.9"
     def room_version = "2.2.5"
     def lifecycle_version = "2.2.0"
@@ -54,9 +58,20 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.3.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'com.google.firebase:firebase-auth:19.3.2'
+    implementation 'com.google.firebase:firebase-firestore:21.5.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    testImplementation "com.google.truth:truth:1.0.1"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // RXJava 3
+    implementation "io.reactivex.rxjava2:rxjava:2.1.1"
+
+    //RxAndroid
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
@@ -106,7 +121,7 @@ dependencies {
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$dagger_hilt_androidx_lifecycle_version"
     kapt "androidx.hilt:hilt-compiler:$dagger_hilt_androidx_lifecycle_version"
     // For instrumentation tests
-    androidTestImplementation  "com.google.dagger:hilt-android-testing:$dagger_hilt_tests_version"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$dagger_hilt_tests_version"
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$dagger_hilt_tests_version"
     // For local unit tests
     testImplementation "com.google.dagger:hilt-android-testing:$dagger_hilt_tests_version"
@@ -118,7 +133,8 @@ dependencies {
 
     // Dagger Android
     implementation "com.google.dagger:dagger-android:$dagger_android_version"
-    implementation "com.google.dagger:dagger-android-support:$dagger_android_version" // if you use the support libraries
+    implementation "com.google.dagger:dagger-android-support:$dagger_android_version"
+    // if you use the support libraries
     kapt "com.google.dagger:dagger-android-processor:$dagger_android_version"
 
     // Timber

@@ -3,9 +3,11 @@ package com.misolova.medifora.data.repo
 import androidx.lifecycle.LiveData
 import com.misolova.medifora.data.source.local.MediforaDao
 import com.misolova.medifora.data.source.local.entities.*
+import com.misolova.medifora.data.source.remote.FirebaseSource
 import javax.inject.Inject
 
-class MediforaRepository @Inject constructor(private val mediforaDao: MediforaDao) :
+class MediforaRepository @Inject constructor(private val mediforaDao: MediforaDao,
+private val firebaseSource: FirebaseSource) :
     MediforaRepositoryInterface {
 
     override suspend fun insertAnswer(answerEntity: AnswerEntity) = mediforaDao.insertAnswer(answerEntity)
@@ -53,4 +55,11 @@ class MediforaRepository @Inject constructor(private val mediforaDao: MediforaDa
     override fun getUserWithQuestionsAnswers(): LiveData<List<UserQuestionAnswersEntity>> = mediforaDao.getUserWithQuestionsAndAnswers()
 //    override fun getQuestionWithAnswers(): LiveData<List<QuestionAnswerEntity>> = mediforaDao.getQuestionWithAnswers()
     override fun getUserWithAnswers(): LiveData<List<UserAnswerEntity>> = mediforaDao.getUserWithAnswers()
+    override fun getAllUsers(): LiveData<List<String>> = mediforaDao.getAllUsernames()
+
+
+    override fun login(email: String, password: String) = firebaseSource.login(email, password)
+    override  fun register(email: String, password: String) = firebaseSource.register(email, password)
+    override fun currentUser() = firebaseSource.currentUser()
+    override fun logout() = firebaseSource.logout()
 }

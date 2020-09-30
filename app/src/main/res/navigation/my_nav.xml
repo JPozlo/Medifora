@@ -6,9 +6,9 @@
     app:startDestination="@id/homeFragment">
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.misolova.medifora.ui.fragment.HomeFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_accountFragment"
             app:destination="@id/accountFragment" />
@@ -30,9 +30,9 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.misolova.medifora.ui.fragment.ProfileFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" >
+        tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profileFragment_to_userQuestionsFragment"
             app:destination="@id/userQuestionsFragment" />
@@ -42,59 +42,59 @@
     </fragment>
     <fragment
         android:id="@+id/answerRequestFragment"
-        android:name="com.misolova.medifora.ui.fragment.AnswerRequestFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.AnswerRequestFragment"
         android:label="Answer Requests"
-        tools:layout="@layout/fragment_answer_request" >
+        tools:layout="@layout/fragment_answer_request">
         <action
             android:id="@+id/action_answerRequestFragment_to_answerFormFragment"
             app:destination="@id/answerFormFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.misolova.medifora.ui.fragment.SettingsFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" >
+        tools:layout="@layout/fragment_settings">
         <action
             android:id="@+id/action_settingsFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountFragment"
-        android:name="com.misolova.medifora.ui.fragment.AccountFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.AccountFragment"
         android:label="fragment_account"
-        tools:layout="@layout/fragment_account" >
+        tools:layout="@layout/fragment_account">
         <action
             android:id="@+id/action_accountFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/logoutFragment"
-        android:name="com.misolova.medifora.ui.fragment.LogoutFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.LogoutFragment"
         android:label="fragment_logout"
-        tools:layout="@layout/fragment_logout" >
+        tools:layout="@layout/fragment_logout">
         <action
             android:id="@+id/action_logoutFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacyFragment"
-        android:name="com.misolova.medifora.ui.fragment.PrivacyFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.PrivacyFragment"
         android:label="fragment_privacy"
-        tools:layout="@layout/fragment_privacy" >
+        tools:layout="@layout/fragment_privacy">
         <action
             android:id="@+id/action_privacyFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/offlineFragment"
-        android:name="com.misolova.medifora.ui.fragment.OfflineFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.OfflineFragment"
         android:label="fragment_offline"
         tools:layout="@layout/fragment_offline" />
     <fragment
         android:id="@+id/userQuestionsFragment"
-        android:name="com.misolova.medifora.ui.fragment.UserQuestionsFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.UserQuestionsFragment"
         android:label="fragment_user_questions"
-        tools:layout="@layout/fragment_user_questions" >
+        tools:layout="@layout/fragment_user_questions">
         <action
             android:id="@+id/action_userQuestionsFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
@@ -104,9 +104,9 @@
     </fragment>
     <fragment
         android:id="@+id/userAnswersFragment"
-        android:name="com.misolova.medifora.ui.fragment.UserAnswersFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.UserAnswersFragment"
         android:label="fragment_user_answers"
-        tools:layout="@layout/fragment_user_answers" >
+        tools:layout="@layout/fragment_user_answers">
         <action
             android:id="@+id/action_userAnswersFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
@@ -117,36 +117,34 @@
     </fragment>
     <fragment
         android:id="@+id/listOfAnswersToQuestionFragment"
-        android:name="com.misolova.medifora.ui.fragment.ListOfAnswersToQuestionFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.ListOfAnswersToQuestionFragment"
         android:label="fragment_list_of_answers_to_question"
-        tools:layout="@layout/fragment_list_of_answers_to_question" >
+        tools:layout="@layout/fragment_list_of_answers_to_question">
         <argument
             android:name="questionID"
-            app:argType="integer"
-            android:defaultValue="0" />
+            app:argType="string" />
         <action
             android:id="@+id/action_listOfAnswersToQuestionFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/answerFormFragment"
-        android:name="com.misolova.medifora.ui.fragment.AnswerFormFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.AnswerFormFragment"
         android:label="fragment_answer_form"
-        tools:layout="@layout/fragment_answer_form" >
+        tools:layout="@layout/fragment_answer_form">
         <action
             android:id="@+id/action_answerFormFragment_to_listOfAnswersToQuestionFragment"
             app:destination="@id/listOfAnswersToQuestionFragment"
             app:popUpToInclusive="false" />
         <argument
             android:name="questionID"
-            app:argType="integer"
-            android:defaultValue="0" />
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/questionFormFragment"
-        android:name="com.misolova.medifora.ui.fragment.QuestionFormFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.QuestionFormFragment"
         android:label="fragment_question_form"
-        tools:layout="@layout/fragment_question_form" >
+        tools:layout="@layout/fragment_question_form">
         <action
             android:id="@+id/action_questionFormFragment_to_listOfAnswersToQuestionFragment"
             app:destination="@id/listOfAnswersToQuestionFragment" />

@@ -36,15 +36,6 @@
                 android:text="Answer Preview..."
                 android:textSize="18sp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnUserAnswerDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Details"
-                android:textSize="18sp"
-                android:textStyle="bold|italic" />
-
         </LinearLayout>
 
     </LinearLayout>

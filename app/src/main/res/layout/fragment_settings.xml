@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10sp"
-    tools:context=".ui.fragment.SettingsFragment">
+    tools:context="com.misolova.medifora.ui.home.fragment.SettingsFragment">
 
     <TextView
         android:id="@+id/tvChangeTheme"

@@ -2,8 +2,12 @@ package com.misolova.medifora.util
 
 object Constants {
 
-    const val QUESTION_ID_BUNDLE_KEY_VALUE = "questionID"
-    const val USER_NAME_VALUE = "questionID"
     const val MEDIFORA_DB_NAME = "MediforaDB"
+
+    const val USER_DATA_BUNDLE = "USER_DATA_BUNDLE"
+
+    const val SHARED_PREFERENCES_NAME = "sharedPreferences"
+    const val KEY_USER_STATUS = "MY_USER_STATUS"
+    const val KEY_USER_ID = "MY_USER_ID"
 
 }
