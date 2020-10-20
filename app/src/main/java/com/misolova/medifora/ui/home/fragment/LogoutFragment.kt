@@ -13,6 +13,7 @@ import com.google.android.material.button.MaterialButton
 import com.misolova.medifora.R
 import com.misolova.medifora.ui.auth.AuthActivity
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.Constants.KEY_USER_STATUS
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -53,6 +54,7 @@ class LogoutFragment : Fragment() {
 
         confirmLogoutButton?.setOnClickListener {
             sharedPreferences.edit().putBoolean(KEY_USER_STATUS, false).apply()
+            sharedPreferences.edit().putString(KEY_USER_ID, "").apply()
             viewModel.logout
             val intent = Intent(requireActivity(), AuthActivity::class.java)
             startActivity(intent)

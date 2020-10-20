@@ -80,8 +80,10 @@ class LoginFragment : Fragment() {
             Timber.d("Successfully saved data -> ${it.user}")
             val user = it.user
             Timber.d("$TAG: The user id is -> ${user?.uid!!}")
-            sharedPreferences.edit().putString(KEY_USER_ID, user.uid)
+            sharedPreferences.edit().putString(KEY_USER_ID, user.uid).commit()
             sharedPreferences.edit().putBoolean(Constants.KEY_USER_STATUS, true).apply()
+            val customTestId = sharedPreferences.getString(KEY_USER_ID, "")
+            Timber.d("$TAG: The custom test id id is -> $customTestId")
             val intent = Intent(requireActivity(), MainActivity::class.java)
             intent.apply {
                 this.putExtra(USER_DATA_BUNDLE, user)

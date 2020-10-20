@@ -4,12 +4,18 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.misolova.medifora.data.repo.MediforaRepository
+import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.util.isEmailValid
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
@@ -57,8 +63,8 @@ class AuthViewModel @ViewModelInject constructor(
         return login(email, password)
     }
 
-    fun signUpFunction(email: String, password: String): Task<AuthResult> {
-        return signUp(email, password)
+    fun signUpFunction( email: String, password: String): Task<AuthResult> {
+       return signUp(email, password)
     }
 
 
@@ -73,7 +79,20 @@ class AuthViewModel @ViewModelInject constructor(
             }
     }
 
-    private fun signUp(email: String, password: String): Task<AuthResult> {
+    fun saveUser(name: String, email: String, photo: String?, userID: String) = viewModelScope.launch {
+        FirebaseProfileService.createUser(name, email, photo, userID)
+            .onCompletion { cause ->
+                Timber.d("${TAG}: Cause of completing user creation -> $cause")
+            }
+            .catch { cause ->
+                Timber.e("${TAG}: Caught the exception -> $cause")
+            }
+            .collect { value ->
+                Timber.d("${TAG}: The collected value is -> ${value.get().result}")
+            }
+    }
+
+    private fun signUp( email: String, password: String): Task<AuthResult> {
         return mediforaRepository.register(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {

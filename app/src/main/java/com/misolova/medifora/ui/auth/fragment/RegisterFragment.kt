@@ -15,8 +15,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
-import com.misolova.medifora.data.source.remote.FirebaseProfileService
-import com.misolova.medifora.domain.model.UserInfo
 import com.misolova.medifora.ui.auth.viewmodel.AuthViewModel
 import com.misolova.medifora.ui.home.MainActivity
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
@@ -101,20 +99,18 @@ class RegisterFragment : Fragment() {
 
 
     private fun register(username: String, email: String, password: String) {
-        authViewModel.signUpFunction(email, password)
+        authViewModel.signUpFunction(email = email, password= password)
             .addOnSuccessListener {
                 val fireUser = it.user
-                val user = UserInfo(
-                    userId = fireUser?.uid!!,
-                    name = username,
-                    email = email,
-                    password = password,
-                    accountCreatedAt = System.currentTimeMillis(),
-                    photo = null
-                )
-                Timber.d("$TAG: The user id is -> ${fireUser.uid}")
-                FirebaseProfileService.createUser(user)
-                sharedPreferences.edit().putString(KEY_USER_ID, fireUser.uid)
+                val fireUserId = fireUser?.uid!!
+                Timber.d("$TAG: The user id is -> $fireUserId")
+                authViewModel.saveUser(name = username, email = email, photo = null, userID = fireUserId)
+                Timber.d("$TAG: Executed after user save")
+                Timber.d("$TAG: Username -> $username")
+                Timber.d("$TAG: Photo -> null")
+                Timber.d("$TAG: UserId -> $fireUserId")
+                Timber.d("$TAG: email -> $email")
+                sharedPreferences.edit().putString(KEY_USER_ID, fireUser.uid).apply()
                 sharedPreferences.edit().putBoolean(KEY_USER_STATUS, true).apply()
                 val intent = Intent(requireActivity(), MainActivity::class.java)
                 intent.apply {

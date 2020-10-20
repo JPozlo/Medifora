@@ -1,5 +1,6 @@
 package com.misolova.medifora.data.source.remote
 
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.DocumentReference
@@ -10,9 +11,8 @@ import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.domain.model.AnswerInfo.Companion.toAnswerInfo
 import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.domain.model.QuestionInfo.Companion.toQuestionInfo
-import com.misolova.medifora.domain.model.User
 import com.misolova.medifora.domain.model.UserInfo
-import com.misolova.medifora.domain.model.UserInfo.Companion.toUser
+import com.misolova.medifora.domain.model.UserInfo.Companion.toUserInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
@@ -29,17 +29,22 @@ object FirebaseProfileService {
     val db = FirebaseFirestore.getInstance()
     val fireUser = FirebaseAuth.getInstance().currentUser
 
-    fun createUser(user: UserInfo){
-        try {
-           db.collection("users")
-               .add(user)
-                .addOnSuccessListener {documentReference ->
-                    Timber.d("$TAG: The document id is -> ${documentReference.toString()}")
-                }.addOnFailureListener{e ->
-                    Timber.e("$TAG: Failure adding document -> $e")
+    fun createUser(name: String, email: String, photo: String?, userID: String): Flow<DocumentReference> {
+        return callbackFlow {
+            val user = UserInfo(userId = userID, name = name, email = email, accountCreatedAt = Timestamp.now(), photo = photo)
+            val listenerRegistration = db.collection("users").document(userID)
+                .set(user)
+                .addOnSuccessListener {
+                    Timber.d("$TAG: Successfully added user")
                 }
-        } catch (e: Exception){
-            Timber.e("$TAG: Error adding  document -> $e")
+                .addOnFailureListener {error ->
+                    cancel(message = "Error adding user", cause = error)
+                    Timber.e("$TAG: Exception caused by -> ${error.message}")
+                    return@addOnFailureListener
+                }
+            awaitClose {
+                Timber.d("$TAG: Cancelling create user listener")
+            }
         }
     }
 
@@ -51,7 +56,7 @@ object FirebaseProfileService {
                 .addOnSuccessListener { docRef ->
                     Timber.d("$TAG: Answer added successfully -> $docRef")
                 }
-                .addOnFailureListener {error ->
+                .addOnFailureListener { error ->
                     cancel(message = "Error adding answer", cause = error)
                     Timber.e("$TAG: Exception caused by -> ${error.message}")
                     return@addOnFailureListener
@@ -62,16 +67,25 @@ object FirebaseProfileService {
         }
     }
 
-    suspend fun createQuestion(question: QuestionInfo): Flow<DocumentReference> {
+    suspend fun createQuestion(
+        questionId: String,
+        content: String,
+        userId: String
+    ): Flow<DocumentReference> {
         return callbackFlow {
-            val id = db.collection("users").document(fireUser?.uid!!).collection("questions")
-                .document().id
+            val question = QuestionInfo(
+                questionId = questionId,
+                questionContent = content,
+                questionCreatedAt = Timestamp.now(),
+                questionAuthorID = userId,
+                totalNumberOfAnswers = 0
+            )
             val listenerRegistration = db.collection("users")
-                .document(fireUser?.uid!!).collection("questions").document(id).set(question)
+                .document(userId).collection("questions").document(questionId).set(question)
                 .addOnSuccessListener {
-                    Timber.d("$TAG: Successfully added question -> ${it.toString()}")
+                    Timber.d("$TAG: Successfully added question")
                 }
-                .addOnFailureListener {error ->
+                .addOnFailureListener { error ->
                     cancel(message = "Error adding answer", cause = error)
                     Timber.e("$TAG: Exception caused by -> ${error.message}")
                     return@addOnFailureListener
@@ -82,10 +96,33 @@ object FirebaseProfileService {
         }
     }
 
-    suspend fun getProfileData(userId: String): User? {
+    suspend fun getUserDetails(id: String): Flow<UserInfo?> {
+        return callbackFlow {
+            val listenerRegistration = db.collection("users").document(id)
+                .get()
+                .addOnSuccessListener {
+                    Timber.d("$TAG: Successfully fetched user")
+                }
+                .addOnFailureListener { error ->
+                    cancel(message = "Error fetching user", cause = error)
+                    Timber.e("$TAG: Exception caused by -> ${error.message}")
+                    return@addOnFailureListener
+                }
+                .addOnCompleteListener {
+                    val map = it.result?.toUserInfo()
+                    offer(map)
+                }
+
+            awaitClose {
+                Timber.d("$TAG: Cancelling user details fetching listener")
+            }
+        }
+    }
+
+    fun getProfileData(userId: String): UserInfo? {
         return try {
             db.collection("users")
-                .document(userId).get().result?.toUser()
+                .document(userId).get().result?.toUserInfo()
         } catch (e: Exception) {
             Timber.d("$TAG: Error getting user details -> $e")
             FirebaseCrashlytics.getInstance().log("Error getting user details")
@@ -95,22 +132,24 @@ object FirebaseProfileService {
         }
     }
 
-   suspend fun getUserQuestions(userId: String): Flow<List<QuestionInfo>?> {
+    suspend fun getUserQuestions(userId: String): Flow<List<QuestionInfo>?> {
         return callbackFlow {
             val listenerRegistration = db.collection("users")
                 .document(userId)
                 .collection("questions")
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
-                        cancel(message = "Error fetching user questions",
-                            cause = firebaseFirestoreException)
+                        cancel(
+                            message = "Error fetching user questions",
+                            cause = firebaseFirestoreException
+                        )
                         return@addSnapshotListener
                     }
                     val map = querySnapshot?.documents?.mapNotNull { it.toQuestionInfo() }
                     offer(map)
                 }
             awaitClose {
-                Timber.d( "$TAG: Cancelling User Questions listener")
+                Timber.d("$TAG: Cancelling User Questions listener")
                 listenerRegistration.remove()
             }
         }
@@ -121,66 +160,68 @@ object FirebaseProfileService {
             val listenerRegistration = db.collection("users")
                 .document(userId)
                 .collection("answers")
-                .addSnapshotListener{value: QuerySnapshot?, error: FirebaseFirestoreException? ->
-                    if(error != null){
+                .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
+                    if (error != null) {
                         cancel(message = "Error fetching user answers", cause = error)
                         return@addSnapshotListener
                     }
                     val map = value?.documents?.mapNotNull { it.toAnswerInfo() }
                     offer(map)
                 }
-            awaitClose{
+            awaitClose {
                 Timber.d("$TAG: Cancelling User Answers listener")
                 listenerRegistration.remove()
             }
         }
     }
 
-    suspend fun getQuestions(): Flow<List<QuestionInfo>?>{
+    suspend fun getQuestions(): Flow<List<QuestionInfo>?> {
         return callbackFlow {
             val listenerRegistration = db.collectionGroup("questions")
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
-                        cancel(message = "Error fetching questions",
-                            cause = firebaseFirestoreException)
+                        cancel(
+                            message = "Error fetching questions",
+                            cause = firebaseFirestoreException
+                        )
                         return@addSnapshotListener
                     }
                     val map = querySnapshot?.documents?.mapNotNull { it.toQuestionInfo() }
                     offer(map)
                 }
             awaitClose {
-                Timber.d( "$TAG: Cancelling User Questions listener")
+                Timber.d("$TAG: Cancelling User Questions listener")
                 listenerRegistration.remove()
             }
         }
     }
 
-    suspend fun getQuestionById(questionId: String): Flow<QuestionInfo?>{
-        return callbackFlow {
-            val listenerRegistration = db.collection("users").document(fireUser?.uid!!)
-                .collection("questions").document(questionId)
-                .addSnapshotListener { value, error ->
-                    if(error != null){
-                        cancel(message = "Error fetching question", cause = error)
-                        return@addSnapshotListener
-                    }
-                    val map = value?.data?.to(QuestionInfo("", "", 0, "", 0L))
-                    val second = map?.second
-                    offer(second)
-                }
-            awaitClose {
-                Timber.d("$TAG: Cancelling question listener")
-                listenerRegistration.remove()
-            }
-        }
-    }
+//    suspend fun getQuestionById(questionId: String): Flow<QuestionInfo?>{
+//        return callbackFlow {
+//            val listenerRegistration = db.collection("users").document(fireUser?.uid!!)
+//                .collection("questions").document(questionId)
+//                .addSnapshotListener { value, error ->
+//                    if(error != null){
+//                        cancel(message = "Error fetching question", cause = error)
+//                        return@addSnapshotListener
+//                    }
+//                    val map = value?.data?.to(QuestionInfo("", "", 0, "", 0001-01-01T00:00:00Z))
+//                    val second = map?.second
+//                    offer(second)
+//                }
+//            awaitClose {
+//                Timber.d("$TAG: Cancelling question listener")
+//                listenerRegistration.remove()
+//            }
+//        }
+//    }
 
-    suspend fun getAnswersToQuestion(questionId: String): Flow<List<AnswerInfo>?>{
+    suspend fun getAnswersToQuestion(questionId: String): Flow<List<AnswerInfo>?> {
         return callbackFlow {
             val listenerRegistration = db.collection("users").document(fireUser?.uid!!)
-            .collection("questions").document(questionId).collection("answers")
-                .addSnapshotListener{ value: QuerySnapshot?, error: FirebaseFirestoreException? ->
-                    if(error != null){
+                .collection("questions").document(questionId).collection("answers")
+                .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
+                    if (error != null) {
                         cancel(message = "Error fetching answers to question", cause = error)
                         return@addSnapshotListener
                     }

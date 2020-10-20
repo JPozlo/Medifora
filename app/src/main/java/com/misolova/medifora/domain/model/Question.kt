@@ -1,12 +1,12 @@
 package com.misolova.medifora.domain.model
 
 import android.os.Parcelable
+import com.google.firebase.Timestamp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.android.parcel.Parcelize
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
-import kotlin.time.milliseconds
 
 
 data class Question(
@@ -20,7 +20,7 @@ data class QuestionInfo(
     val questionContent: String,
     val totalNumberOfAnswers: Int,
     val questionAuthorID: String,
-    val questionCreatedAt: Long
+    val questionCreatedAt: Timestamp
 ): Parcelable {
     @ExperimentalTime
     companion object {
@@ -31,7 +31,7 @@ data class QuestionInfo(
                 val content = getString("questionContent")!!
                 val totalNumberOfAnswers = getLong("totalNumberOfAnswers")!!.toInt()
                 val authorID = getString("questionAuthorID")!!
-                val createdAt = getTimestamp("questionCreatedAt")?.seconds?.milliseconds?.toLongMilliseconds()!!
+                val createdAt = getTimestamp("questionCreatedAt")!!
 //                this.getDocumentReference(id)?.collection("answers")?.get()
 //                    ?.addOnCompleteListener {
 //                        if(it.isSuccessful){
@@ -55,7 +55,7 @@ data class QuestionInfo(
                 val content = getString("questionContent")!!
                 val totalNumberOfAnswers = getLong("totalNumberOfAnswers")!!.toInt()
                 val authorID = getString("questionAuthorID")!!
-                val createdAt = getTimestamp("questionCreatedAt")?.seconds?.milliseconds?.toLongMilliseconds()!!
+                val createdAt = getTimestamp("questionCreatedAt")!!
 //                this.getDocumentReference(id)?.collection("answers")?.get()
 //                    ?.addOnCompleteListener {
 //                        if(it.isSuccessful){
