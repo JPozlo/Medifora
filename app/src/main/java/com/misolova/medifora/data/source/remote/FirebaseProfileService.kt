@@ -3,10 +3,7 @@ package com.misolova.medifora.data.source.remote
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.domain.model.AnswerInfo.Companion.toAnswerInfo
 import com.misolova.medifora.domain.model.QuestionInfo
@@ -48,11 +45,11 @@ object FirebaseProfileService {
         }
     }
 
-    suspend fun createAnswer(answer: AnswerInfo, questionId: String): Flow<DocumentReference> {
+    suspend fun createAnswer(answer: AnswerInfo, questionId: String, userId: String, answerId: String): Flow<DocumentReference> {
         return callbackFlow {
-            val listenerRegistration = db.collection("users")
-                .document(fireUser?.uid!!).collection("questions")
-                .document(questionId).collection("answers").document().set(answer)
+
+            val listenerRegistration = db.collection("users/${userId}/questions/${questionId}/answers")
+                .document(answerId).set(answer)
                 .addOnSuccessListener { docRef ->
                     Timber.d("$TAG: Answer added successfully -> $docRef")
                 }
@@ -66,6 +63,7 @@ object FirebaseProfileService {
             }
         }
     }
+
 
     suspend fun createQuestion(
         questionId: String,
@@ -157,9 +155,8 @@ object FirebaseProfileService {
 
     suspend fun getUserAnswers(userId: String): Flow<List<AnswerInfo>?> {
         return callbackFlow {
-            val listenerRegistration = db.collection("users")
-                .document(userId)
-                .collection("answers")
+            val listenerRegistration = db.collectionGroup("answers")
+                .whereEqualTo("answerAuthorID", userId)
                 .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
                     if (error != null) {
                         cancel(message = "Error fetching user answers", cause = error)
@@ -190,15 +187,57 @@ object FirebaseProfileService {
                     offer(map)
                 }
             awaitClose {
-                Timber.d("$TAG: Cancelling User Questions listener")
+                Timber.d("$TAG: Cancelling All Questions listener")
                 listenerRegistration.remove()
             }
         }
     }
 
-//    suspend fun getQuestionById(questionId: String): Flow<QuestionInfo?>{
+    suspend fun getQuestionsWithZeroAnswers(): Flow<List<QuestionInfo>?>{
+        return callbackFlow {
+            val listenerRegistration = db.collectionGroup("questions").whereEqualTo("totalNumberOfAnswers", 0)
+                .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
+                    if (firebaseFirestoreException != null) {
+                        cancel(
+                            message = "Error fetching questions",
+                            cause = firebaseFirestoreException
+                        )
+                        return@addSnapshotListener
+                    }
+                    val map = querySnapshot?.documents?.mapNotNull { it.toQuestionInfo() }
+                    offer(map)
+                }
+            awaitClose {
+                Timber.d("$TAG: Cancelling All Questions listener")
+                listenerRegistration.remove()
+            }
+        }
+    }
+
+    suspend fun getQuestionsSortByDate(): Flow<List<QuestionInfo>?>{
+        return callbackFlow {
+            val listenerRegistration = db.collectionGroup("questions").orderBy("questionCreatedAt", Query.Direction.DESCENDING)
+                .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
+                    if (firebaseFirestoreException != null) {
+                        cancel(
+                            message = "Error fetching questions",
+                            cause = firebaseFirestoreException
+                        )
+                        return@addSnapshotListener
+                    }
+                    val map = querySnapshot?.documents?.mapNotNull { it.toQuestionInfo() }
+                    offer(map)
+                }
+            awaitClose {
+                Timber.d("$TAG: Cancelling All Questions listener")
+                listenerRegistration.remove()
+            }
+        }
+    }
+
+//    suspend fun getQuestionById(questionId: String, userId: String): Flow<QuestionInfo?>{
 //        return callbackFlow {
-//            val listenerRegistration = db.collection("users").document(fireUser?.uid!!)
+//            val listenerRegistration = db.collection("users").document(userId)
 //                .collection("questions").document(questionId)
 //                .addSnapshotListener { value, error ->
 //                    if(error != null){
@@ -216,9 +255,9 @@ object FirebaseProfileService {
 //        }
 //    }
 
-    suspend fun getAnswersToQuestion(questionId: String): Flow<List<AnswerInfo>?> {
+    suspend fun getAnswersToQuestion(questionId: String, userId: String): Flow<List<AnswerInfo>?> {
         return callbackFlow {
-            val listenerRegistration = db.collection("users").document(fireUser?.uid!!)
+            val listenerRegistration = db.collection("users").document(userId)
                 .collection("questions").document(questionId).collection("answers")
                 .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
                     if (error != null) {

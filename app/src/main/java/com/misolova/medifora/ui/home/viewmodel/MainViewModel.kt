@@ -51,8 +51,12 @@ class MainViewModel @ViewModelInject constructor(
     val userProfile: LiveData<User> = _userProfile
     private val _homeFeedQuestions = MutableLiveData<List<QuestionInfo>>()
     val homeFeedQuestions: LiveData<List<QuestionInfo>> = _homeFeedQuestions
-    private val _userQuestions = MutableLiveData<List<QuestionInfo>>()
-    val userQuestions: LiveData<List<QuestionInfo>> = _userQuestions
+    private val _allQuestions = MutableLiveData<List<QuestionInfo>>()
+    val allQuestions: LiveData<List<QuestionInfo>> = _allQuestions
+    private val _questionsByCreationDate = MutableLiveData<List<QuestionInfo>>()
+    val questionsByCreationDate: LiveData<List<QuestionInfo>> = _questionsByCreationDate
+    private val _questionsWithoutAnswers = MutableLiveData<List<QuestionInfo>>()
+    val questionsWithoutAnswers: LiveData<List<QuestionInfo>> = _questionsWithoutAnswers
     private val _answers = MutableLiveData<List<AnswerInfo>>()
     val answers: LiveData<List<AnswerInfo>> = _answers
     private val _answersToQuiz = MutableLiveData<List<AnswerInfo>>()
@@ -76,17 +80,39 @@ class MainViewModel @ViewModelInject constructor(
             FirebaseProfileService.getQuestions().collect { value ->
                 _homeFeedQuestions.value = value
             }
+
             FirebaseProfileService.getUserQuestions(getUserId()).collect { value ->
-                _userQuestions.value = value
+                _allQuestions.value = value
             }
             FirebaseProfileService.getUserAnswers(getUserId()).collect { value ->
                 _userAnswers.value = value
             }
-            FirebaseProfileService.getAnswersToQuestion(questionId = getQuestionId()).collect { value ->
-                _answersToQuiz.value = value
-            }
             FirebaseProfileService.getUserDetails(id = getUserId()).collect { value ->
                 _userDetails.value = value
+            }
+        }
+    }
+
+    fun startFetchingAnswersToQuestion(userID: String){
+        viewModelScope.launch {
+            FirebaseProfileService.getAnswersToQuestion(questionId = getQuestionId(), userId = userID).collect { value ->
+                _answersToQuiz.value = value
+            }
+        }
+    }
+
+    fun startFetchingHomeQuestions(){
+        viewModelScope.launch {
+            FirebaseProfileService.getQuestionsSortByDate().collect { value ->
+                _questionsByCreationDate.value = value
+            }
+        }
+    }
+
+    fun startFetchingQuestionsWithoutAnswers(){
+        viewModelScope.launch {
+            FirebaseProfileService.getQuestionsWithZeroAnswers().collect{ value ->
+                _questionsWithoutAnswers.value = value
             }
         }
     }
@@ -113,8 +139,14 @@ class MainViewModel @ViewModelInject constructor(
             }
     }
 
-    fun addAnswer(answer: AnswerInfo, questionId: String) = viewModelScope.launch {
-        FirebaseProfileService.createAnswer(answer = answer, questionId = questionId)
+    fun addAnswer(answer: AnswerInfo, questionId: String, userID: String) = viewModelScope.launch {
+        FirebaseProfileService.createAnswer(answer = answer, questionId = questionId, answerId = answer.answerId, userId = userID)
+            .onCompletion {cause ->
+                Timber.d("$TAG: Cause of completing question -> $cause")
+            }
+            .catch { cause ->
+                Timber.e("$TAG: Caught the exception -> $cause")
+            }
             .collect { value ->
                 Timber.d("$TAG: Results of adding answer -> ${value.get().result}")
             }

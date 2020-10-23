@@ -4,14 +4,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
-import com.misolova.medifora.data.source.local.entities.AnswerEntity
 import com.misolova.medifora.domain.model.Answer
 import com.misolova.medifora.domain.model.AnswerInfo
+import com.misolova.medifora.util.DateConversion
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_list_of_answers_to_question_item.view.*
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
-import kotlin.time.milliseconds
 
 @ExperimentalTime
 class AnswersListToQuestionAdapter(private val answersToQuizArrayList: List<AnswerInfo>): RecyclerView.Adapter<AnswersListToQuestionAdapter.AnswersListToQuestionAdapterViewHolder>() {
@@ -41,7 +40,8 @@ class AnswersListToQuestionAdapter(private val answersToQuizArrayList: List<Answ
 
     override fun onBindViewHolder(holder: AnswersListToQuestionAdapterViewHolder, position: Int) {
         val answer = answersToQuizArrayList[position]
-        holder.itemView.tvListOfAnswersToQuizAnswerDateCreatedItem.text = answer.answerCreatedAt.milliseconds.toIsoString()
+        val date = DateConversion().convertDate(answer.answerCreatedAt)
+        holder.itemView.tvListOfAnswersToQuizAnswerDateCreatedItem.text = date
         holder.itemView.tvListOfAnswersToQuizAnswerAuthorItem.text = answer.answerAuthorID
         holder.itemView.tvListOfAnswersToQuizAnswerContentItem.text = answer.answerContent
     }

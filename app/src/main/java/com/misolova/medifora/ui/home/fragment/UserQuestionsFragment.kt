@@ -38,7 +38,7 @@ class UserQuestionsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userQuestions = viewModel.userQuestions
+        val userQuestions = viewModel.allQuestions
         userQuestions.observe(viewLifecycleOwner, Observer {
             userQuestionsAnswersList = it
             Timber.d("$TAG: The count for adapter items -> ${it.count()}")

@@ -63,7 +63,9 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val homeFeedQuestions = viewModel.homeFeedQuestions
+        viewModel.startFetchingHomeQuestions()
+
+        val homeFeedQuestions = viewModel.questionsByCreationDate
         homeFeedQuestions.observe(viewLifecycleOwner, Observer {
             questionsArrayList = it
             if (it.count() > 0) {
@@ -72,7 +74,6 @@ class HomeFragment : Fragment() {
                 noRecyclerViewData()
             }
         })
-
 
     }
 

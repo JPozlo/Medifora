@@ -1,5 +1,6 @@
 package com.misolova.medifora.ui.home.fragment
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,14 +15,17 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.adapters.AnswersListToQuestionAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_list_of_answers_to_question.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
@@ -40,6 +44,9 @@ class ListOfAnswersToQuestionFragment : Fragment() {
     }
 
     private val viewModel: MainViewModel by viewModels()
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var adapter: AnswersListToQuestionAdapter
     private lateinit var answersToQuizArrayList: List<AnswerInfo>
@@ -78,21 +85,34 @@ class ListOfAnswersToQuestionFragment : Fragment() {
             view.findViewById(R.id.progressBarListOfAnswersToQuizFragment) as ProgressBar?
 
         progressBar?.visibility = View.VISIBLE
-        progressBar?.isIndeterminate = false
 
         arguments?.apply {
-//            var questionID = ListOfAnswersToQuestionFragmentArgs.fromBundle(this).questionID
+            var questionID = ListOfAnswersToQuestionFragmentArgs.fromBundle(this).questionID
 
-//            Log.d("$TAG", "The question ID is $questionID")
+            Log.d("$TAG", "The question ID is $questionID")
 
-            viewModel.questionID.observe(viewLifecycleOwner, Observer {
-                val questionID = it!!
-                tvListOfAnswersToQuestionTitle.text = questionID
-            })
+            viewModel.setQuestionId(questionID)
+
+//            viewModel.questionID.observe(viewLifecycleOwner, Observer {
+//                val questionID = it!!
+//                tvListOfAnswersToQuestionTitle.text = questionID
+//            })
+            Timber.d("$TAG: ViewModel quiz id is -> ${viewModel.questionID.value}")
+
+            tvListOfAnswersToQuestionTitle.text = questionID
+
+            val userID = sharedPreferences.getString(KEY_USER_ID, "")!!
+
+            viewModel.startFetchingAnswersToQuestion(userID)
 
             viewModel.answersToQuiz.observe(viewLifecycleOwner, Observer {
-                Timber.d("$TAG: The answers are -> ${it[0]}")
-                Log.d("$TAG", "The answers list is -> ${it[0]}")
+//                Timber.d("$TAG: The answers are -> ${it.forEach { answer -> answer.answerContent }}")
+                Timber.d("$TAG: The count of answers to quiz is -> ${it.count()}")
+                if(it.isEmpty() || it.count() <= 0 ){
+                    Snackbar.make(view, "No answers yet", Snackbar.LENGTH_LONG).show()
+                    progressBar?.visibility = View.GONE
+                    return@Observer
+                }
                 answersToQuizArrayList = it
                 progressBar?.visibility = View.GONE
                 setupRecyclerview(view, answersToQuizArrayList)

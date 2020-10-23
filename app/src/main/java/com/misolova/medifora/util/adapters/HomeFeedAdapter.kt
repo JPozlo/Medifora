@@ -5,11 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.QuestionInfo
+import com.misolova.medifora.util.DateConversion
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_home_item.view.*
 import kotlinx.coroutines.InternalCoroutinesApi
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.time.ExperimentalTime
 
 @InternalCoroutinesApi
@@ -38,11 +37,7 @@ class HomeFeedAdapter(private val homeQuestionsList: List<QuestionInfo>,
 
     override fun onBindViewHolder(holder: HomeFeedAdapter.HomeFeedViewHolder, position: Int) {
         val question = homeQuestionsList[position]
-        val dateInTimestamp =  question.questionCreatedAt
-        val millis = dateInTimestamp.seconds * 1000 + dateInTimestamp.nanoseconds / 1000000
-        val dateFormat = SimpleDateFormat("HH:mm, MM/dd/yyyy")
-        val myDate = Date(millis)
-        val date = dateFormat.format(myDate).toString()
+        val date = DateConversion().convertDate(question.questionCreatedAt)
         holder.itemView.tvHomeFeedQuestionContentItem.text = question.questionContent
         holder.itemView.tvHomeFeedQuestionAuthorItem.text = question.questionAuthorID
         holder.itemView.tvHomeFeedQuestionCreationDateItem.text = date

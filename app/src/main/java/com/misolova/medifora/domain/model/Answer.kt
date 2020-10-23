@@ -1,12 +1,12 @@
 package com.misolova.medifora.domain.model
 
 import android.os.Parcelable
+import com.google.firebase.Timestamp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.android.parcel.Parcelize
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
-import kotlin.time.milliseconds
 
 data class Answer(
     val answerInfo: AnswerInfo,
@@ -21,7 +21,7 @@ data class AnswerInfo(
     val questionID: String,
     val answerAuthorID: String,
     val votes: Int,
-    val answerCreatedAt: Long
+    val answerCreatedAt: Timestamp
 ) : Parcelable {
 
     @ExperimentalTime
@@ -31,14 +31,14 @@ data class AnswerInfo(
                 val content = getString("answerContent")!!
                 val questionID = getString("questionID")!!
                 val authorID = getString("answerAuthorID")!!
-                val votes = getLong("votes")?.toInt()
+                val votes = getLong("votes")?.toInt()!!
                 val createdAt =
-                    getTimestamp("answerCreatedAt")?.seconds?.milliseconds?.toLongMilliseconds()!!
+                    getTimestamp("answerCreatedAt")!!
                 return AnswerInfo(
                     answerId = id,
                     answerContent = content,
                     answerCreatedAt = createdAt,
-                    votes = votes!!,
+                    votes = votes,
                     answerAuthorID = authorID,
                     questionID = questionID
                 )
@@ -59,7 +59,7 @@ data class AnswerInfo(
                 val authorID = getString("answerAuthorID")!!
                 val votes = getLong("votes")?.toInt()
                 val createdAt =
-                    getTimestamp("answerCreatedAt")?.seconds?.milliseconds?.toLongMilliseconds()!!
+                    getTimestamp("answerCreatedAt")!!
                 return Answer(
                     AnswerInfo(
                         answerId = id,
