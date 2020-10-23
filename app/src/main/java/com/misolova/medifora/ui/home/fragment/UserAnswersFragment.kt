@@ -1,5 +1,6 @@
 package com.misolova.medifora.ui.home.fragment
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,9 +15,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.adapters.UserAnswersAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
 @AndroidEntryPoint
@@ -27,6 +30,9 @@ class UserAnswersFragment : Fragment() {
 
     private lateinit var adapter: UserAnswersAdapter
     private lateinit var userAnswersArrayList: List<AnswerInfo>
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,17 +45,22 @@ class UserAnswersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.userAnswers.observe(viewLifecycleOwner, Observer {
+        viewModel.startFetchingUserAnswers(getUserId())
+
+        val userAnswers = viewModel.userAnswers
+        userAnswers.observe(viewLifecycleOwner, Observer {
             userAnswersArrayList = it
             Timber.d("$TAG: The count for adapter items -> ${it.count()}")
             if(it.count() > 0){
                 setupRecyclerViewData(userAnswersArrayList)
             } else{
-                noRecyclerViewDataTest()
+                noRecyclerViewData()
             }
         })
-
     }
+
+    private fun getUserId() = sharedPreferences.getString(KEY_USER_ID, "")!!
+
 
     companion object {
         @JvmStatic
@@ -61,23 +72,17 @@ class UserAnswersFragment : Fragment() {
         private const val TAG = "USER ANSWERS FRAGMENT"
     }
 
-//    private fun noRecyclerViewData(){
-//        return adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
-//            override fun onChanged() {
-//                super.onChanged()
-//                if(adapter.itemCount == 0){
-//                    Toast.makeText(activity, "You haven't answered any question yet", Toast.LENGTH_SHORT).show()
-//                    setupRecyclerview(view, listOf())
-//                    adapter.notifyDataSetChanged()
-//                }
-//            }
-//        })
-//    }
-
-    private fun noRecyclerViewDataTest(){
-        Snackbar.make(requireView(), "You haven't answered any question yet", Snackbar.LENGTH_LONG).show()
-        setupRecyclerview(view, listOf())
-        adapter.notifyDataSetChanged()
+    private fun noRecyclerViewData(){
+        return adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
+            override fun onChanged() {
+                super.onChanged()
+                if(adapter.itemCount == 0){
+                    Snackbar.make(requireView(), "You haven't answered any question yet", Snackbar.LENGTH_LONG).show()
+                    setupRecyclerview(view, listOf())
+                    adapter.notifyDataSetChanged()
+                }
+            }
+        })
     }
 
     private fun setupRecyclerViewData(quizList: List<AnswerInfo>) {
@@ -88,10 +93,11 @@ class UserAnswersFragment : Fragment() {
     private fun setupRecyclerview(rootView: View?, userAnswers: List<AnswerInfo>) {
         val recyclerView = rootView?.findViewById(R.id.recyclerViewUserAnswers) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        adapter = UserAnswersAdapter(findNavController(), userAnswers){ position ->
+        adapter = UserAnswersAdapter(userAnswers){ position ->
             val userAnswer = userAnswers[position]
-            Timber.d("$TAG: Question ID is ${userAnswer.questionID}")
-            val action = UserAnswersFragmentDirections.actionUserAnswersFragmentToListOfAnswersToQuestionFragment(userAnswer.questionID)
+            val quizId = userAnswer.questionID
+            Timber.d("$TAG: Question ID is $quizId")
+            val action = UserAnswersFragmentDirections.actionUserAnswersFragmentToListOfAnswersToQuestionFragment(quizId)
             findNavController().navigate(action)
         }
         recyclerView.adapter = adapter

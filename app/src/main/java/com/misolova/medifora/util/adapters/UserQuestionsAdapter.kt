@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.QuestionInfo
+import com.misolova.medifora.util.DateConversion
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_user_questions_item.view.*
 import kotlin.time.ExperimentalTime
@@ -32,8 +33,9 @@ class UserQuestionsAdapter(
 
     override fun onBindViewHolder(holder: UserQuestionsViewHolder, position: Int) {
         val userQuestion = userQuestionsList[position]
+        val date = DateConversion().convertDate(userQuestion.questionCreatedAt)
         holder.itemView.tvUserQuestionsTitleItem.text = userQuestion.questionContent
-        holder.itemView.tvUserQuestionsCreatedAtItem.text = userQuestion.questionCreatedAt.toDate().toString()
+        holder.itemView.tvUserQuestionsCreatedAtItem.text = date
         holder.itemView.tvUserQuestionAnswersCountItem.text = userQuestion.totalNumberOfAnswers.toString()
     }
 }

@@ -132,9 +132,8 @@ object FirebaseProfileService {
 
     suspend fun getUserQuestions(userId: String): Flow<List<QuestionInfo>?> {
         return callbackFlow {
-            val listenerRegistration = db.collection("users")
-                .document(userId)
-                .collection("questions")
+            val listenerRegistration = db.collectionGroup("questions")
+                .whereEqualTo("questionAuthorID", userId)
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
                         cancel(

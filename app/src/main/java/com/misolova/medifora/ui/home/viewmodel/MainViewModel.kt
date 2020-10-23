@@ -61,6 +61,8 @@ class MainViewModel @ViewModelInject constructor(
     val answers: LiveData<List<AnswerInfo>> = _answers
     private val _answersToQuiz = MutableLiveData<List<AnswerInfo>>()
     val answersToQuiz: LiveData<List<AnswerInfo>> = _answersToQuiz
+    private val _userQuestions = MutableLiveData<List<QuestionInfo>>()
+    val userQuestions: LiveData<List<QuestionInfo>> = _userQuestions
     private val _userAnswers = MutableLiveData<List<AnswerInfo>>()
     val userAnswers: LiveData<List<AnswerInfo>> = _userAnswers
     private val _questionById = MutableLiveData<QuestionInfo>()
@@ -113,6 +115,22 @@ class MainViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             FirebaseProfileService.getQuestionsWithZeroAnswers().collect{ value ->
                 _questionsWithoutAnswers.value = value
+            }
+        }
+    }
+
+    fun startFetchingUserAnswers(userID: String){
+        viewModelScope.launch {
+            FirebaseProfileService.getUserAnswers(userID).collect{ value ->
+                _userAnswers.value = value
+            }
+        }
+    }
+
+    fun startFetchingUserQuestions(userID: String){
+        viewModelScope.launch {
+            FirebaseProfileService.getUserQuestions(userID).collect { value ->
+                _userQuestions.value = value
             }
         }
     }

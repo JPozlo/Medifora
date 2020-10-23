@@ -1,5 +1,6 @@
 package com.misolova.medifora.ui.home.fragment
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +15,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.adapters.UserQuestionsAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 @ExperimentalTime
 class UserQuestionsFragment : Fragment() {
@@ -27,6 +32,9 @@ class UserQuestionsFragment : Fragment() {
 
     private lateinit var adapter: UserQuestionsAdapter
     private lateinit var userQuestionsAnswersList: List<QuestionInfo>
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +46,9 @@ class UserQuestionsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userQuestions = viewModel.allQuestions
+        viewModel.startFetchingUserQuestions(getUserId())
+
+        val userQuestions = viewModel.userQuestions
         userQuestions.observe(viewLifecycleOwner, Observer {
             userQuestionsAnswersList = it
             Timber.d("$TAG: The count for adapter items -> ${it.count()}")
@@ -48,8 +58,9 @@ class UserQuestionsFragment : Fragment() {
                 noRecyclerViewData()
             }
         })
-
     }
+
+    private fun getUserId() = sharedPreferences.getString(KEY_USER_ID, "")!!
 
     companion object {
         @JvmStatic

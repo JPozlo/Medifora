@@ -2,15 +2,13 @@ package com.misolova.medifora.util.adapters
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_user_answers_item.view.*
 
-class UserAnswersAdapter(private val navController: NavController,
-                         private val userAnswersArrayList: List<AnswerInfo>,
+class UserAnswersAdapter(                         private val userAnswersArrayList: List<AnswerInfo>,
                          private val itemClick: (Int) -> Unit): RecyclerView.Adapter<UserAnswersAdapter.UserAnswersViewHolder>() {
 
     inner class UserAnswersViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -30,6 +28,6 @@ class UserAnswersAdapter(private val navController: NavController,
     override fun onBindViewHolder(holder: UserAnswersViewHolder, position: Int) {
         val userAnswer = userAnswersArrayList[position]
         holder.itemView.tvUserAnswersQuestionTitleItem.text = userAnswer.questionID
-        holder.itemView.tvUserAnswerPreviewItem.text = userAnswer.answerContent.subSequence(0, 5)
+        holder.itemView.tvUserAnswerPreviewItem.text = userAnswer.answerContent
     }
 }
