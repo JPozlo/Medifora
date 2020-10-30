@@ -8,7 +8,7 @@ import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_user_answers_item.view.*
 
-class UserAnswersAdapter(                         private val userAnswersArrayList: List<AnswerInfo>,
+class UserAnswersAdapter(private val userAnswersArrayList: List<AnswerInfo>,
                          private val itemClick: (Int) -> Unit): RecyclerView.Adapter<UserAnswersAdapter.UserAnswersViewHolder>() {
 
     inner class UserAnswersViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){

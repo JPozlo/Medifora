@@ -20,6 +20,7 @@ data class QuestionInfo(
     val questionContent: String,
     val totalNumberOfAnswers: Int,
     val questionAuthorID: String,
+    val questionAuthor: String,
     val questionCreatedAt: Timestamp
 ): Parcelable {
     @ExperimentalTime
@@ -31,6 +32,7 @@ data class QuestionInfo(
                 val content = getString("questionContent")!!
                 val totalNumberOfAnswers = getLong("totalNumberOfAnswers")!!.toInt()
                 val authorID = getString("questionAuthorID")!!
+                val author = getString("questionAuthor")!!
                 val createdAt = getTimestamp("questionCreatedAt")!!
 //                this.getDocumentReference(id)?.collection("answers")?.get()
 //                    ?.addOnCompleteListener {
@@ -40,7 +42,7 @@ data class QuestionInfo(
 //                            }
 //                        }
 //                    }
-                return QuestionInfo(questionId = id, questionContent = content, totalNumberOfAnswers = totalNumberOfAnswers, questionAuthorID = authorID, questionCreatedAt = createdAt)
+                return QuestionInfo(questionId = id, questionContent = content, totalNumberOfAnswers = totalNumberOfAnswers, questionAuthorID = authorID, questionAuthor = author, questionCreatedAt = createdAt)
             } catch (e: Exception) {
                 Timber.d("Error converting question profile: $e")
                 FirebaseCrashlytics.getInstance().log("Error converting question profile")
@@ -55,6 +57,7 @@ data class QuestionInfo(
                 val content = getString("questionContent")!!
                 val totalNumberOfAnswers = getLong("totalNumberOfAnswers")!!.toInt()
                 val authorID = getString("questionAuthorID")!!
+                val author = getString("questionAuthor")!!
                 val createdAt = getTimestamp("questionCreatedAt")!!
 //                this.getDocumentReference(id)?.collection("answers")?.get()
 //                    ?.addOnCompleteListener {
@@ -64,7 +67,7 @@ data class QuestionInfo(
 //                            }
 //                        }
 //                    }
-                return Question(QuestionInfo(questionId = id, questionContent = content, totalNumberOfAnswers = totalNumberOfAnswers, questionAuthorID = authorID, questionCreatedAt = createdAt))
+                return Question(QuestionInfo(questionId = id, questionContent = content, totalNumberOfAnswers = totalNumberOfAnswers, questionAuthorID = authorID, questionAuthor = author,questionCreatedAt = createdAt))
             } catch (e: Exception) {
                 Timber.d("Error converting question profile: $e")
                 FirebaseCrashlytics.getInstance().log("Error converting question profile")

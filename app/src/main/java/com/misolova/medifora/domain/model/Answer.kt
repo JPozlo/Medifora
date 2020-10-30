@@ -20,6 +20,7 @@ data class AnswerInfo(
     val answerContent: String,
     val questionID: String,
     val answerAuthorID: String,
+    val answerAuthor: String,
     val votes: Int,
     val answerCreatedAt: Timestamp
 ) : Parcelable {
@@ -31,6 +32,7 @@ data class AnswerInfo(
                 val content = getString("answerContent")!!
                 val questionID = getString("questionID")!!
                 val authorID = getString("answerAuthorID")!!
+                val author = getString("answerAuthor")!!
                 val votes = getLong("votes")?.toInt()!!
                 val createdAt =
                     getTimestamp("answerCreatedAt")!!
@@ -40,6 +42,7 @@ data class AnswerInfo(
                     answerCreatedAt = createdAt,
                     votes = votes,
                     answerAuthorID = authorID,
+                    answerAuthor = author,
                     questionID = questionID
                 )
             } catch (e: Exception) {
@@ -57,6 +60,7 @@ data class AnswerInfo(
                 val content = getString("answerContent")!!
                 val questionID = getString("questionID")!!
                 val authorID = getString("answerAuthorID")!!
+                val author = getString("answerAuthor")!!
                 val votes = getLong("votes")?.toInt()
                 val createdAt =
                     getTimestamp("answerCreatedAt")!!
@@ -67,6 +71,7 @@ data class AnswerInfo(
                         answerCreatedAt = createdAt,
                         votes = votes!!,
                         answerAuthorID = authorID,
+                        answerAuthor = author,
                         questionID = questionID
                     )
                 )

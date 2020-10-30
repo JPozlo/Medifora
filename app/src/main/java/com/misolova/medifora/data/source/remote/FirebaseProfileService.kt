@@ -1,7 +1,6 @@
 package com.misolova.medifora.data.source.remote
 
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.*
 import com.misolova.medifora.domain.model.AnswerInfo
@@ -24,7 +23,6 @@ object FirebaseProfileService {
     private const val TAG = "FirebaseProfileService"
 
     val db = FirebaseFirestore.getInstance()
-    val fireUser = FirebaseAuth.getInstance().currentUser
 
     fun createUser(name: String, email: String, photo: String?, userID: String): Flow<DocumentReference> {
         return callbackFlow {
@@ -68,7 +66,8 @@ object FirebaseProfileService {
     suspend fun createQuestion(
         questionId: String,
         content: String,
-        userId: String
+        userId: String,
+        author: String
     ): Flow<DocumentReference> {
         return callbackFlow {
             val question = QuestionInfo(
@@ -76,6 +75,7 @@ object FirebaseProfileService {
                 questionContent = content,
                 questionCreatedAt = Timestamp.now(),
                 questionAuthorID = userId,
+                questionAuthor = author,
                 totalNumberOfAnswers = 0
             )
             val listenerRegistration = db.collection("users")

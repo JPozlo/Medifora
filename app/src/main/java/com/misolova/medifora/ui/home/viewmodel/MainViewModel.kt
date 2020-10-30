@@ -140,11 +140,12 @@ class MainViewModel @ViewModelInject constructor(
 
     fun getProfileData(id: String) = FirebaseProfileService.getProfileData(id)
 
-    fun addQuestion(questionId: String, content: String, userID: String) = viewModelScope.launch {
+    fun addQuestion(questionId: String, content: String, userID: String, author: String) = viewModelScope.launch {
         FirebaseProfileService.createQuestion(
             questionId = questionId,
             content = content,
-            userId = userID
+            userId = userID,
+            author = author
         )
             .onCompletion { cause ->
                 Timber.d("$TAG: Cause of completing question -> $cause")

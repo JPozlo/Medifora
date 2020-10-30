@@ -16,6 +16,7 @@ import com.misolova.medifora.R
 import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
+import com.misolova.medifora.util.Constants.KEY_USER_NAME
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
@@ -51,7 +52,7 @@ class QuestionFormFragment : Fragment() {
             val id = FirebaseProfileService.db.collection("users").document(getUserID()).collection("questions")
                 .document().id
             val questionContent = questionEditText?.text.toString()
-            viewModel.addQuestion(content = questionContent, questionId = id, userID = getUserID())
+            viewModel.addQuestion(content = questionContent, questionId = id, userID = getUserID(), author = getUsername())
             progressBarCreateQuestion?.visibility = View.GONE
             Snackbar.make(view, "Question saved to DB", Snackbar.LENGTH_LONG).show()
             val action =
@@ -62,6 +63,8 @@ class QuestionFormFragment : Fragment() {
     }
 
     private fun getUserID() = sharedPreferences.getString(KEY_USER_ID, "")!!
+
+    private fun getUsername() = sharedPreferences.getString(KEY_USER_NAME, "")!!
 
     companion object {
         @JvmStatic

@@ -39,7 +39,7 @@ class HomeFeedAdapter(private val homeQuestionsList: List<QuestionInfo>,
         val question = homeQuestionsList[position]
         val date = DateConversion().convertDate(question.questionCreatedAt)
         holder.itemView.tvHomeFeedQuestionContentItem.text = question.questionContent
-        holder.itemView.tvHomeFeedQuestionAuthorItem.text = question.questionAuthorID
+        holder.itemView.tvHomeFeedQuestionAuthorItem.text = question.questionAuthor
         holder.itemView.tvHomeFeedQuestionCreationDateItem.text = date
     }
 

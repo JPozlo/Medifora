@@ -19,6 +19,7 @@ import com.misolova.medifora.ui.auth.viewmodel.AuthViewModel
 import com.misolova.medifora.ui.home.MainActivity
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
+import com.misolova.medifora.util.Constants.KEY_USER_NAME
 import com.misolova.medifora.util.Constants.KEY_USER_STATUS
 import com.misolova.medifora.util.Constants.USER_DATA_BUNDLE
 import dagger.hilt.android.AndroidEntryPoint
@@ -111,6 +112,7 @@ class RegisterFragment : Fragment() {
                 Timber.d("$TAG: UserId -> $fireUserId")
                 Timber.d("$TAG: email -> $email")
                 sharedPreferences.edit().putString(KEY_USER_ID, fireUser.uid).apply()
+                sharedPreferences.edit().putString(KEY_USER_NAME, username).apply()
                 sharedPreferences.edit().putBoolean(KEY_USER_STATUS, true).apply()
                 val intent = Intent(requireActivity(), MainActivity::class.java)
                 intent.apply {
