@@ -43,10 +43,9 @@ object FirebaseProfileService {
         }
     }
 
-    suspend fun createAnswer(answer: AnswerInfo, questionId: String, userId: String, answerId: String): Flow<DocumentReference> {
+    suspend fun createAnswer(answer: AnswerInfo, answerId: String): Flow<DocumentReference> {
         return callbackFlow {
-
-            val listenerRegistration = db.collection("users/${userId}/questions/${questionId}/answers")
+            val listenerRegistration = db.collection("answers")
                 .document(answerId).set(answer)
                 .addOnSuccessListener { docRef ->
                     Timber.d("$TAG: Answer added successfully -> $docRef")
@@ -78,8 +77,7 @@ object FirebaseProfileService {
                 questionAuthor = author,
                 totalNumberOfAnswers = 0
             )
-            val listenerRegistration = db.collection("users")
-                .document(userId).collection("questions").document(questionId).set(question)
+            val listenerRegistration = db.collection("questions").document(questionId).set(question)
                 .addOnSuccessListener {
                     Timber.d("$TAG: Successfully added question")
                 }
@@ -132,7 +130,7 @@ object FirebaseProfileService {
 
     suspend fun getUserQuestions(userId: String): Flow<List<QuestionInfo>?> {
         return callbackFlow {
-            val listenerRegistration = db.collectionGroup("questions")
+            val listenerRegistration = db.collection("questions")
                 .whereEqualTo("questionAuthorID", userId)
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
@@ -154,7 +152,7 @@ object FirebaseProfileService {
 
     suspend fun getUserAnswers(userId: String): Flow<List<AnswerInfo>?> {
         return callbackFlow {
-            val listenerRegistration = db.collectionGroup("answers")
+            val listenerRegistration = db.collection("answers")
                 .whereEqualTo("answerAuthorID", userId)
                 .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
                     if (error != null) {
@@ -173,7 +171,7 @@ object FirebaseProfileService {
 
     suspend fun getQuestions(): Flow<List<QuestionInfo>?> {
         return callbackFlow {
-            val listenerRegistration = db.collectionGroup("questions")
+            val listenerRegistration = db.collection("questions")
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
                         cancel(
@@ -194,7 +192,7 @@ object FirebaseProfileService {
 
     suspend fun getQuestionsWithZeroAnswers(): Flow<List<QuestionInfo>?>{
         return callbackFlow {
-            val listenerRegistration = db.collectionGroup("questions").whereEqualTo("totalNumberOfAnswers", 0)
+            val listenerRegistration = db.collection("questions").whereEqualTo("totalNumberOfAnswers", 0)
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
                         cancel(
@@ -215,7 +213,7 @@ object FirebaseProfileService {
 
     suspend fun getQuestionsSortByDate(): Flow<List<QuestionInfo>?>{
         return callbackFlow {
-            val listenerRegistration = db.collectionGroup("questions").orderBy("questionCreatedAt", Query.Direction.DESCENDING)
+            val listenerRegistration = db.collection("questions").orderBy("questionCreatedAt", Query.Direction.DESCENDING)
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
                         cancel(
@@ -254,10 +252,9 @@ object FirebaseProfileService {
 //        }
 //    }
 
-    suspend fun getAnswersToQuestion(questionId: String, userId: String): Flow<List<AnswerInfo>?> {
+    suspend fun getAnswersToQuestion(questionId: String): Flow<List<AnswerInfo>?> {
         return callbackFlow {
-            val listenerRegistration = db.collection("users").document(userId)
-                .collection("questions").document(questionId).collection("answers")
+            val listenerRegistration = db.collection("answers").whereEqualTo("questionID", questionId)
                 .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
                     if (error != null) {
                         cancel(message = "Error fetching answers to question", cause = error)
@@ -272,9 +269,4 @@ object FirebaseProfileService {
             }
         }
     }
-
-//    suspend fun getAnswersToQuestion(questionID: String): CollectionReference {
-//        return db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.uid)
-//            .collection("questions").document(questionID).collection("answers")
-//    }
 }

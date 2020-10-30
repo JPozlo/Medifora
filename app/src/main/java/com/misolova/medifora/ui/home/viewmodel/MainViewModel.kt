@@ -82,7 +82,6 @@ class MainViewModel @ViewModelInject constructor(
             FirebaseProfileService.getQuestions().collect { value ->
                 _homeFeedQuestions.value = value
             }
-
             FirebaseProfileService.getUserQuestions(getUserId()).collect { value ->
                 _allQuestions.value = value
             }
@@ -95,9 +94,9 @@ class MainViewModel @ViewModelInject constructor(
         }
     }
 
-    fun startFetchingAnswersToQuestion(userID: String){
+    fun startFetchingAnswersToQuestion(){
         viewModelScope.launch {
-            FirebaseProfileService.getAnswersToQuestion(questionId = getQuestionId(), userId = userID).collect { value ->
+            FirebaseProfileService.getAnswersToQuestion(questionId = getQuestionId()).collect { value ->
                 _answersToQuiz.value = value
             }
         }
@@ -158,8 +157,8 @@ class MainViewModel @ViewModelInject constructor(
             }
     }
 
-    fun addAnswer(answer: AnswerInfo, questionId: String, userID: String) = viewModelScope.launch {
-        FirebaseProfileService.createAnswer(answer = answer, questionId = questionId, answerId = answer.answerId, userId = userID)
+    fun addAnswer(answer: AnswerInfo) = viewModelScope.launch {
+        FirebaseProfileService.createAnswer(answer = answer, answerId = answer.answerId)
             .onCompletion {cause ->
                 Timber.d("$TAG: Cause of completing question -> $cause")
             }
