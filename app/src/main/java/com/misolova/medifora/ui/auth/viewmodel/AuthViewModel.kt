@@ -25,12 +25,20 @@ class AuthViewModel @ViewModelInject constructor(
     private val mediforaRepository: MediforaRepository
 ) : ViewModel() {
 
-    private val _userIsAuthenticated = MutableLiveData<Boolean>()
-    val userIsAuthenticated: LiveData<Boolean> = _userIsAuthenticated
-
     companion object {
         private const val TAG = "AUTH_VIEW_MODEL"
     }
+
+    private val _userIsAuthenticated = MutableLiveData<Boolean>()
+    val userIsAuthenticated: LiveData<Boolean> = _userIsAuthenticated
+
+    val photoUrl = MutableLiveData<String>()
+
+    fun setPhotoUrl(url: String){
+        photoUrl.value = url
+    }
+
+    fun getPhotoUrl() = photoUrl.value
 
     val user by lazy{
         FirebaseAuth.getInstance().currentUser

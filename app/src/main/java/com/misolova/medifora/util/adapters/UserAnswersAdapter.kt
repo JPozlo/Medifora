@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.AnswerInfo
+import com.misolova.medifora.util.DateConversion
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_user_answers_item.view.*
 
@@ -27,7 +28,8 @@ class UserAnswersAdapter(private val userAnswersArrayList: List<AnswerInfo>,
 
     override fun onBindViewHolder(holder: UserAnswersViewHolder, position: Int) {
         val userAnswer = userAnswersArrayList[position]
-        holder.itemView.tvUserAnswersQuestionTitleItem.text = userAnswer.questionID
+        val date = DateConversion().convertDate(userAnswer.answerCreatedAt)
+        holder.itemView.tvUserAnswersQuestionTitleItem.text = date
         holder.itemView.tvUserAnswerPreviewItem.text = userAnswer.answerContent
     }
 }

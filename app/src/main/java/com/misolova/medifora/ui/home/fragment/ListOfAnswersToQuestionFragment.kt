@@ -2,7 +2,6 @@ package com.misolova.medifora.ui.home.fragment
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
-import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.adapters.AnswersListToQuestionAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_list_of_answers_to_question.*
@@ -89,24 +87,22 @@ class ListOfAnswersToQuestionFragment : Fragment() {
         arguments?.apply {
             var questionID = ListOfAnswersToQuestionFragmentArgs.fromBundle(this).questionID
 
-            Log.d("$TAG", "The question ID is $questionID")
+            Timber.d("$TAG: The question ID is $questionID")
 
             viewModel.setQuestionId(questionID)
+            viewModel.fetchQuestionById(questionID)
 
-//            viewModel.questionID.observe(viewLifecycleOwner, Observer {
-//                val questionID = it!!
-//                tvListOfAnswersToQuestionTitle.text = questionID
-//            })
             Timber.d("$TAG: ViewModel quiz id is -> ${viewModel.questionID.value}")
 
-            tvListOfAnswersToQuestionTitle.text = questionID
+            viewModel.startFetchingAnswersToQuestion()
 
-            val userID = sharedPreferences.getString(KEY_USER_ID, "")!!
-
-            viewModel.startFetchingAnswersToQuestion(userID)
+             viewModel.questionById.observe(viewLifecycleOwner, Observer {
+                 val quizContent = it.questionContent
+                 Timber.d("$TAG: Quiz Content is -> $quizContent")
+                 tvListOfAnswersToQuestionTitle.text = quizContent
+            })
 
             viewModel.answersToQuiz.observe(viewLifecycleOwner, Observer {
-//                Timber.d("$TAG: The answers are -> ${it.forEach { answer -> answer.answerContent }}")
                 Timber.d("$TAG: The count of answers to quiz is -> ${it.count()}")
                 if(it.isEmpty() || it.count() <= 0 ){
                     Snackbar.make(view, "No answers yet", Snackbar.LENGTH_LONG).show()

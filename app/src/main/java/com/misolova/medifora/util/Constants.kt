@@ -11,4 +11,12 @@ object Constants {
     const val KEY_USER_ID = "MY_USER_ID"
     const val KEY_USER_NAME = "MY_USER_NAME"
 
+    const val CAMERA_REQUEST_CODE = 123
+    const val GALLERY_REQUEST_CODE = 456
+
+    const val RC_CAMERA_PERM = 112
+    const val RC_EXTERNAL_PERM = 332
+
+
+
 }

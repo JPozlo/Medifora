@@ -54,7 +54,9 @@ class UserAnswersFragment : Fragment() {
             if(it.count() > 0){
                 setupRecyclerViewData(userAnswersArrayList)
             } else{
-                noRecyclerViewData()
+                Snackbar.make(requireView(), "You haven't answered any question yet", Snackbar.LENGTH_LONG).show()
+                setupRecyclerview(view, listOf())
+                adapter.notifyDataSetChanged()
             }
         })
     }
@@ -70,19 +72,6 @@ class UserAnswersFragment : Fragment() {
             }
 
         private const val TAG = "USER ANSWERS FRAGMENT"
-    }
-
-    private fun noRecyclerViewData(){
-        return adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
-            override fun onChanged() {
-                super.onChanged()
-                if(adapter.itemCount == 0){
-                    Snackbar.make(requireView(), "You haven't answered any question yet", Snackbar.LENGTH_LONG).show()
-                    setupRecyclerview(view, listOf())
-                    adapter.notifyDataSetChanged()
-                }
-            }
-        })
     }
 
     private fun setupRecyclerViewData(quizList: List<AnswerInfo>) {

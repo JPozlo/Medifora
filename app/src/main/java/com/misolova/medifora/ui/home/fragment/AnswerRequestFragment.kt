@@ -16,6 +16,7 @@ import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.adapters.AnswerRequestAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
@@ -63,7 +64,12 @@ class AnswerRequestFragment : Fragment() {
     private fun setupRecyclerview(rootView: View?, quizList: List<QuestionInfo>) {
         val recyclerView = rootView?.findViewById(R.id.recyclerViewAnswerRequest) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        adapter = AnswerRequestAdapter(quizList, findNavController())
+        adapter = AnswerRequestAdapter(quizList) { position ->
+            val questionID = quizList[position].questionId
+            Timber.d("${TAG}: Answer Request Question ID: $questionID")
+            val action = AnswerRequestFragmentDirections.actionAnswerRequestFragmentToAnswerFormFragment(questionID)
+            findNavController().navigate(action)
+        }
         recyclerView.adapter = adapter
     }
 }

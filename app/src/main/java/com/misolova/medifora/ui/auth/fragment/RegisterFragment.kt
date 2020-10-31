@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -15,9 +16,11 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
+import com.misolova.medifora.ui.auth.ImagePickerDialog
 import com.misolova.medifora.ui.auth.viewmodel.AuthViewModel
 import com.misolova.medifora.ui.home.MainActivity
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.BitmapConversion
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.Constants.KEY_USER_NAME
 import com.misolova.medifora.util.Constants.KEY_USER_STATUS
@@ -43,6 +46,8 @@ class RegisterFragment : Fragment() {
         private const val TAG = "REGISTER_FRAGMENT"
     }
 
+    private var photoUrl: String? = null
+
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
@@ -60,6 +65,7 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val btnImagePicker = view.findViewById(R.id.btnUserImage) as MaterialButton?
         val btnRegisterUser = view.findViewById(R.id.btnRegister) as MaterialButton?
         val switchScreenButton = view.findViewById(R.id.btnSwitchToLogin) as MaterialButton
 
@@ -68,6 +74,20 @@ class RegisterFragment : Fragment() {
         val passwordEditText = view.findViewById(R.id.etPassword) as EditText?
         val confirmPasswordEditText = view.findViewById(R.id.etConfirmPassword) as EditText?
         val checkboxAcceptTerms = view.findViewById(R.id.checkboxAcceptTerms) as CheckBox?
+        val userImage = view.findViewById(R.id.ivProfilePic) as ImageView?
+
+        photoUrl = authViewModel.getPhotoUrl()
+
+        Timber.d("$TAG: The photo url is: $photoUrl")
+
+        if(photoUrl != null){
+            userImage?.setImageBitmap(BitmapConversion().decodeString(photoUrl!!))
+        }
+
+        btnImagePicker?.setOnClickListener {
+            val dialog = ImagePickerDialog()
+            dialog.show(requireActivity().supportFragmentManager, "Image Picker Dialog")
+        }
 
         btnRegisterUser?.setOnClickListener {
             val username = usernameEditText?.text.toString()
@@ -98,17 +118,16 @@ class RegisterFragment : Fragment() {
 
     }
 
-
     private fun register(username: String, email: String, password: String) {
         authViewModel.signUpFunction(email = email, password= password)
             .addOnSuccessListener {
                 val fireUser = it.user
                 val fireUserId = fireUser?.uid!!
                 Timber.d("$TAG: The user id is -> $fireUserId")
-                authViewModel.saveUser(name = username, email = email, photo = null, userID = fireUserId)
+                authViewModel.saveUser(name = username, email = email, photo = photoUrl, userID = fireUserId)
                 Timber.d("$TAG: Executed after user save")
                 Timber.d("$TAG: Username -> $username")
-                Timber.d("$TAG: Photo -> null")
+                Timber.d("$TAG: Photo -> $photoUrl")
                 Timber.d("$TAG: UserId -> $fireUserId")
                 Timber.d("$TAG: email -> $email")
                 sharedPreferences.edit().putString(KEY_USER_ID, fireUser.uid).apply()
@@ -124,7 +143,6 @@ class RegisterFragment : Fragment() {
                 Timber.e("${TAG}: Error due to -> ${it.message}")
             }
     }
-
 
     private fun goToLogin() {
         findNavController().navigate(R.id.action_registerFragment_to_loginFragment)

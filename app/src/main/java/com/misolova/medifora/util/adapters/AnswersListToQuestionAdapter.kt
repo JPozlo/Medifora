@@ -42,7 +42,7 @@ class AnswersListToQuestionAdapter(private val answersToQuizArrayList: List<Answ
         val answer = answersToQuizArrayList[position]
         val date = DateConversion().convertDate(answer.answerCreatedAt)
         holder.itemView.tvListOfAnswersToQuizAnswerDateCreatedItem.text = date
-        holder.itemView.tvListOfAnswersToQuizAnswerAuthorItem.text = answer.answerAuthorID
+        holder.itemView.tvListOfAnswersToQuizAnswerAuthorItem.text = answer.answerAuthor
         holder.itemView.tvListOfAnswersToQuizAnswerContentItem.text = answer.answerContent
     }
 }

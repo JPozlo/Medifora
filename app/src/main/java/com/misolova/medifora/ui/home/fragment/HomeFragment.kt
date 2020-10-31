@@ -1,5 +1,6 @@
 package com.misolova.medifora.ui.home.fragment
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +18,14 @@ import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.ui.auth.viewmodel.AuthViewModel
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.Constants.KEY_USER_NAME
 import com.misolova.medifora.util.adapters.HomeFeedAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
 @InternalCoroutinesApi
@@ -35,6 +39,8 @@ class HomeFragment : Fragment() {
 
     private lateinit var adapter: HomeFeedAdapter
     private lateinit var questionsArrayList: List<QuestionInfo>
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
 
     override fun onCreateView(
@@ -63,7 +69,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val name = sharedPreferences.getString(KEY_USER_NAME, "")!!
+
         viewModel.startFetchingHomeQuestions()
+
+    tvHomeFeedTitle.text = "Hello, $name"
 
         val homeFeedQuestions = viewModel.questionsByCreationDate
         homeFeedQuestions.observe(viewLifecycleOwner, Observer {

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -46,20 +45,17 @@ class AnswerFormFragment : Fragment() {
 
         val btnSubmitAnswer = view.findViewById(R.id.btnSubmitAnswerForm) as MaterialButton?
         val answerEditText = view.findViewById(R.id.etAnswerContentForm) as EditText?
-        val progressBar = view.findViewById(R.id.progressBarCreateAnswer) as ProgressBar?
 
         arguments?.apply {
             val quizID = AnswerFormFragmentArgs.fromBundle(this).questionID
 
             btnSubmitAnswer?.setOnClickListener {
-                progressBar?.visibility = View.VISIBLE
                 val id = FirebaseProfileService.db.collection("users").document(getUserID()).collection("questions")
                     .document(quizID).collection("answers").document().id
                 val answerContent = answerEditText?.text.toString()
                 val userID = getUserID()
                 val answer = AnswerInfo(answerId = id, answerContent = answerContent, answerAuthorID = userID, answerAuthor = getUsername(), answerCreatedAt = Timestamp.now(), questionID = quizID, votes = 0)
-                viewModel.addAnswer(answer = answer, questionId = quizID, userID = getUserID())
-                progressBar?.visibility = View.GONE
+                viewModel.addAnswer(answer = answer)
                 Snackbar.make(view, "Answer saved to DB", Snackbar.LENGTH_LONG).show()
                 val action =
                     AnswerFormFragmentDirections.actionAnswerFormFragmentToListOfAnswersToQuestionFragment(

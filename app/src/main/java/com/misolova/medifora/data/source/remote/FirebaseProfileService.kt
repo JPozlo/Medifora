@@ -1,7 +1,6 @@
 package com.misolova.medifora.data.source.remote
 
 import com.google.firebase.Timestamp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.*
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.domain.model.AnswerInfo.Companion.toAnswerInfo
@@ -115,19 +114,6 @@ object FirebaseProfileService {
         }
     }
 
-    fun getProfileData(userId: String): UserInfo? {
-        return try {
-            db.collection("users")
-                .document(userId).get().result?.toUserInfo()
-        } catch (e: Exception) {
-            Timber.d("$TAG: Error getting user details -> $e")
-            FirebaseCrashlytics.getInstance().log("Error getting user details")
-            FirebaseCrashlytics.getInstance().setCustomKey("user id", userId)
-            FirebaseCrashlytics.getInstance().recordException(e)
-            null
-        }
-    }
-
     suspend fun getUserQuestions(userId: String): Flow<List<QuestionInfo>?> {
         return callbackFlow {
             val listenerRegistration = db.collection("questions")
@@ -232,25 +218,25 @@ object FirebaseProfileService {
         }
     }
 
-//    suspend fun getQuestionById(questionId: String, userId: String): Flow<QuestionInfo?>{
-//        return callbackFlow {
-//            val listenerRegistration = db.collection("users").document(userId)
-//                .collection("questions").document(questionId)
-//                .addSnapshotListener { value, error ->
-//                    if(error != null){
-//                        cancel(message = "Error fetching question", cause = error)
-//                        return@addSnapshotListener
-//                    }
-//                    val map = value?.data?.to(QuestionInfo("", "", 0, "", 0001-01-01T00:00:00Z))
-//                    val second = map?.second
-//                    offer(second)
-//                }
-//            awaitClose {
-//                Timber.d("$TAG: Cancelling question listener")
-//                listenerRegistration.remove()
-//            }
-//        }
-//    }
+    suspend fun getQuestionById(questionId: String): Flow<QuestionInfo?>{
+        return callbackFlow {
+            val listenerRegistration = db.collection("questions").whereEqualTo("questionId", questionId)
+                .addSnapshotListener { value, error ->
+                    if(error != null){
+                        cancel(message = "Error fetching question", cause = error)
+                        return@addSnapshotListener
+                    }
+                    val map = value?.documents?.mapNotNull { it.toQuestionInfo() }
+                    val quiz = map?.first()
+                    Timber.d("$TAG: THe question is -> $quiz")
+                    offer(quiz)
+                }
+            awaitClose {
+                Timber.d("$TAG: Cancelling question listener")
+                listenerRegistration.remove()
+            }
+        }
+    }
 
     suspend fun getAnswersToQuestion(questionId: String): Flow<List<AnswerInfo>?> {
         return callbackFlow {

@@ -36,6 +36,6 @@ class UserQuestionsAdapter(
         val date = DateConversion().convertDate(userQuestion.questionCreatedAt)
         holder.itemView.tvUserQuestionsTitleItem.text = userQuestion.questionContent
         holder.itemView.tvUserQuestionsCreatedAtItem.text = date
-        holder.itemView.tvUserQuestionAnswersCountItem.text = userQuestion.totalNumberOfAnswers.toString()
+        holder.itemView.tvUserQuestionAnswersCountItem.text = "Answers: ${userQuestion.totalNumberOfAnswers.toString()}"
     }
 }

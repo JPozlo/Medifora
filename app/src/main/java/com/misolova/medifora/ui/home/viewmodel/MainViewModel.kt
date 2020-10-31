@@ -14,8 +14,6 @@ import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.domain.model.User
-import com.misolova.medifora.domain.model.UserInfo
-import com.misolova.medifora.util.Constants.KEY_USER_ID
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -39,13 +37,16 @@ class MainViewModel @ViewModelInject constructor(
     lateinit var sharedPreferences: SharedPreferences
 
     val questionID = MutableLiveData<String>()
-
     fun setQuestionId(questionId: String) {
         questionID.setValue(questionId)
     }
-
     private fun getQuestionId() = questionID.value!!
 
+    val photoUrl = MutableLiveData<String>()
+    fun setPhotoUrl(url: String){
+        photoUrl.value = url
+    }
+    fun getPhotoUrl() = photoUrl.value!!
 
     private val _userProfile = MutableLiveData<User>()
     val userProfile: LiveData<User> = _userProfile
@@ -67,8 +68,6 @@ class MainViewModel @ViewModelInject constructor(
     val userAnswers: LiveData<List<AnswerInfo>> = _userAnswers
     private val _questionById = MutableLiveData<QuestionInfo>()
     val questionById: LiveData<QuestionInfo> = _questionById
-    private val _userDetails = MutableLiveData<UserInfo>()
-    val userDetails: LiveData<UserInfo> = _userDetails
 
     val user by lazy {
         FirebaseAuth.getInstance().currentUser
@@ -77,19 +76,10 @@ class MainViewModel @ViewModelInject constructor(
     val logout =
         mediforaRepository.logout()
 
-    init {
+    fun fetchQuestionById(id: String){
         viewModelScope.launch {
-            FirebaseProfileService.getQuestions().collect { value ->
-                _homeFeedQuestions.value = value
-            }
-            FirebaseProfileService.getUserQuestions(getUserId()).collect { value ->
-                _allQuestions.value = value
-            }
-            FirebaseProfileService.getUserAnswers(getUserId()).collect { value ->
-                _userAnswers.value = value
-            }
-            FirebaseProfileService.getUserDetails(id = getUserId()).collect { value ->
-                _userDetails.value = value
+            FirebaseProfileService.getQuestionById(id).collect { value ->
+                _questionById.value = value
             }
         }
     }
@@ -134,11 +124,6 @@ class MainViewModel @ViewModelInject constructor(
         }
     }
 
-    fun getUserId() =
-        sharedPreferences.getString(KEY_USER_ID, "")!!
-
-    fun getProfileData(id: String) = FirebaseProfileService.getProfileData(id)
-
     fun addQuestion(questionId: String, content: String, userID: String, author: String) = viewModelScope.launch {
         FirebaseProfileService.createQuestion(
             questionId = questionId,
@@ -160,7 +145,7 @@ class MainViewModel @ViewModelInject constructor(
     fun addAnswer(answer: AnswerInfo) = viewModelScope.launch {
         FirebaseProfileService.createAnswer(answer = answer, answerId = answer.answerId)
             .onCompletion {cause ->
-                Timber.d("$TAG: Cause of completing question -> $cause")
+                Timber.d("$TAG: Cause of completing answer -> $cause")
             }
             .catch { cause ->
                 Timber.e("$TAG: Caught the exception -> $cause")
