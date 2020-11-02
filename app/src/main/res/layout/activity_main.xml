@@ -42,7 +42,6 @@
         android:layout_height="match_parent"
         app:menu="@menu/navigation_drawer_menu"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/navigation_drawer_header"
         app:itemTextAppearance="?android:attr/textAppearanceMedium"
         android:layout_gravity="start"/>
 

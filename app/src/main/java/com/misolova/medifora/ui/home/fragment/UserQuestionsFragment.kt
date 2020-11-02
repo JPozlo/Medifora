@@ -1,23 +1,28 @@
 package com.misolova.medifora.ui.home.fragment
 
 import android.content.SharedPreferences
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
+import com.misolova.medifora.util.SwipeController
+import com.misolova.medifora.util.SwipeControllerActions
 import com.misolova.medifora.util.adapters.UserQuestionsAdapter
+import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_user_questions.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 import javax.inject.Inject
@@ -28,10 +33,21 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 class UserQuestionsFragment : Fragment() {
 
+    companion object {
+        @JvmStatic
+        fun newInstance() =
+            UserQuestionsFragment().apply {
+                UserQuestionsFragment()
+            }
+
+        private const val TAG = "USER QUESTIONS FRAGMENT"
+    }
+
     private val viewModel: MainViewModel by viewModels()
 
     private lateinit var adapter: UserQuestionsAdapter
     private lateinit var userQuestionsAnswersList: List<QuestionInfo>
+    private lateinit var swipeController: SwipeController
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -46,12 +62,13 @@ class UserQuestionsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        progressBarUserQuestionsFragment?.visibility = View.VISIBLE
+
         viewModel.startFetchingUserQuestions(getUserId())
 
-        val userQuestions = viewModel.userQuestions
-        userQuestions.observe(viewLifecycleOwner, Observer {
+        viewModel.userQuestions.observe(viewLifecycleOwner, Observer {
+            progressBarUserQuestionsFragment?.visibility = View.GONE
             userQuestionsAnswersList = it
-            Timber.d("$TAG: The count for adapter items -> ${it.count()}")
             if(it.count() > 0){
                 setupRecyclerViewData(userQuestionsAnswersList)
             } else {
@@ -62,27 +79,8 @@ class UserQuestionsFragment : Fragment() {
 
     private fun getUserId() = sharedPreferences.getString(KEY_USER_ID, "")!!
 
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            UserQuestionsFragment().apply {
-               UserQuestionsFragment()
-            }
-
-        private const val TAG = "USER QUESTIONS FRAGMENT"
-    }
-
     private fun noRecyclerViewData(){
-        return adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
-            override fun onChanged() {
-                super.onChanged()
-                if(adapter.itemCount == 0){
-                    Toast.makeText(activity, "You don't have any questions yet", Toast.LENGTH_SHORT).show()
-                    setupRecyclerview(view, listOf())
-                    adapter.notifyDataSetChanged()
-                }
-            }
-        })
+        notifyUser("You haven't asked any question yet!")
     }
 
     private fun setupRecyclerViewData(quizList: List<QuestionInfo>) {
@@ -90,7 +88,17 @@ class UserQuestionsFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
+    private fun notifyUser(message: String ) = requireView().showSingleActionSnackbar(message)
+
     private fun setupRecyclerview(rootView: View?, userQuizList: List<QuestionInfo>) {
+        swipeController = SwipeController(object: SwipeControllerActions(){
+            override fun onRightClicked(position: Int){
+                viewModel.deleteQuestion(userQuizList[position].questionId)
+                adapter.notifyItemRemoved(position)
+                adapter.notifyItemRangeChanged(position, adapter.itemCount)
+            }
+        })
+        val itemTouchHelper = ItemTouchHelper(swipeController)
         val recyclerView = rootView?.findViewById(R.id.recyclerViewUserQuestions) as RecyclerView?
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         adapter = UserQuestionsAdapter(userQuizList){position ->
@@ -100,5 +108,12 @@ class UserQuestionsFragment : Fragment() {
             findNavController().navigate(action)
         }
         recyclerView?.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+        recyclerView?.addItemDecoration(object: RecyclerView.ItemDecoration(){
+            override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+                super.onDraw(c, parent, state)
+                swipeController.onDraw(c)
+            }
+        })
     }
 }

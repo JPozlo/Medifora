@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:orientation="vertical"
     android:padding="10sp"
     tools:context="com.misolova.medifora.ui.home.fragment.AccountFragment">
@@ -11,6 +12,7 @@
         android:id="@+id/tvLegalTerms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:text="Change Account Details"
         android:textSize="18sp" />
 
@@ -26,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="7sp"
+        android:clickable="true"
         android:text="Delete Account"
         android:textSize="18sp" />
 

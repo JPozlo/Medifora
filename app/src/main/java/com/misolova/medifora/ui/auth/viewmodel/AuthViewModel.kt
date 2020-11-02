@@ -4,18 +4,12 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.misolova.medifora.data.repo.MediforaRepository
-import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.util.isEmailValid
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
@@ -31,14 +25,6 @@ class AuthViewModel @ViewModelInject constructor(
 
     private val _userIsAuthenticated = MutableLiveData<Boolean>()
     val userIsAuthenticated: LiveData<Boolean> = _userIsAuthenticated
-
-    val photoUrl = MutableLiveData<String>()
-
-    fun setPhotoUrl(url: String){
-        photoUrl.value = url
-    }
-
-    fun getPhotoUrl() = photoUrl.value
 
     val user by lazy{
         FirebaseAuth.getInstance().currentUser
@@ -87,28 +73,25 @@ class AuthViewModel @ViewModelInject constructor(
             }
     }
 
-    fun saveUser(name: String, email: String, photo: String?, userID: String) = viewModelScope.launch {
-        FirebaseProfileService.createUser(name, email, photo, userID)
-            .onCompletion { cause ->
-                Timber.d("${TAG}: Cause of completing user creation -> $cause")
-            }
-            .catch { cause ->
-                Timber.e("${TAG}: Caught the exception -> $cause")
-            }
-            .collect { value ->
-                Timber.d("${TAG}: The collected value is -> ${value.get().result}")
-            }
-    }
+    fun saveUser(name: String, email: String, userID: String) =
+        mediforaRepository.createUser(userID, name, email)
+
+
+//    fun saveUser(name: String, email: String, userID: String) = viewModelScope.launch {
+//        FirebaseProfileService.createUser(name, email, userID)
+//            .onCompletion { cause ->
+//                Timber.d("${TAG}: Cause of completing user creation -> $cause")
+//            }
+//            .catch { cause ->
+//                Timber.e("${TAG}: Caught the exception -> $cause")
+//            }
+//            .collect { value ->
+//                Timber.d("${TAG}: The collected value is -> ${value.get().result}")
+//            }
+//    }
 
     private fun signUp( email: String, password: String): Task<AuthResult> {
         return mediforaRepository.register(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Timber.d("$TAG: User successfully created -> ${task.result?.user}")
-                } else {
-                    Timber.e("$TAG: Exception creating user -> ${task.exception?.message}")
-                }
-            }
     }
 
 }

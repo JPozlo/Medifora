@@ -4,44 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="6dp"
-    app:cardElevation="4dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="2dp"
     app:cardUseCompatPadding="true"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="3dp"
     android:padding="12dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tvUserAnswersQuestionTitleItem"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Question Content"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvUserAnswerPreviewItem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:text="Answer Preview..."
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold"/>
 
-        </LinearLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvUserAnswerCreationDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="4dp"
+                android:text="2020/01/12"
+                android:textStyle="bold|italic"
+                android:textSize="18sp"/>
 
-    </LinearLayout>
-
-
-
-
+        </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>

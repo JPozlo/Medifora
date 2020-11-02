@@ -1,9 +1,11 @@
 package com.misolova.medifora.data.repo
 
 import androidx.lifecycle.LiveData
+import com.google.android.gms.tasks.Task
 import com.misolova.medifora.data.source.local.MediforaDao
 import com.misolova.medifora.data.source.local.entities.*
 import com.misolova.medifora.data.source.remote.FirebaseSource
+import com.misolova.medifora.domain.model.AnswerInfo
 import javax.inject.Inject
 
 class MediforaRepository @Inject constructor(private val mediforaDao: MediforaDao,
@@ -47,6 +49,22 @@ private val firebaseSource: FirebaseSource) :
     override fun getQuestionsSortByDateCreated(): LiveData<List<QuestionEntity>>  = mediforaDao.getQuestionsSortByDateCreated()
 
     override suspend fun insertUser(userEntity: UserEntity) = mediforaDao.insertUser(userEntity)
+    override fun createUser(id: String, name: String, email: String) =
+        firebaseSource.createUser(id, name, email)
+
+    override fun createAnswer(answer: AnswerInfo, answerId: String): Task<Void> = firebaseSource.createAnswer(answer, answerId)
+
+    override fun deleteAnswer(id: String): Task<Void> = firebaseSource.deleteAnswer(id)
+
+    override fun createQuestion(
+        questionId: String,
+        content: String,
+        userId: String,
+        author: String
+    ): Task<Void>  = firebaseSource.createQuestion(questionId, content, userId, author)
+
+    override fun deleteQuestion(id: String): Task<Void> = firebaseSource.deleteQuestion(id)
+    override fun deleteAccount(id: String): Task<Void>? = firebaseSource.deleteAccount(id)
 
     override suspend fun deleteUser(userEntity: UserEntity) = mediforaDao.deleteUser(userEntity)
 

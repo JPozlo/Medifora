@@ -16,9 +16,11 @@ import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.Constants.KEY_USER_STATUS
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
+@ExperimentalCoroutinesApi
 @ExperimentalTime
 @AndroidEntryPoint
 class LogoutFragment : Fragment() {

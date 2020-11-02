@@ -8,17 +8,18 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import com.misolova.medifora.R
 import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
-import com.misolova.medifora.util.Constants.KEY_USER_NAME
+import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_answer_form.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
@@ -49,26 +50,40 @@ class AnswerFormFragment : Fragment() {
         arguments?.apply {
             val quizID = AnswerFormFragmentArgs.fromBundle(this).questionID
 
+            var username = ""
+
+            viewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
+                username = it.name
+            })
+
             btnSubmitAnswer?.setOnClickListener {
+                progressBarCreateAnswer?.visibility = View.VISIBLE
                 val id = FirebaseProfileService.db.collection("users").document(getUserID()).collection("questions")
                     .document(quizID).collection("answers").document().id
                 val answerContent = answerEditText?.text.toString()
                 val userID = getUserID()
-                val answer = AnswerInfo(answerId = id, answerContent = answerContent, answerAuthorID = userID, answerAuthor = getUsername(), answerCreatedAt = Timestamp.now(), questionID = quizID, votes = 0)
+                val answer = AnswerInfo(answerId = id, answerContent = answerContent, answerAuthorID = userID, answerAuthor = username, answerCreatedAt = Timestamp.now(), questionID = quizID, votes = 0)
                 viewModel.addAnswer(answer = answer)
-                Snackbar.make(view, "Answer saved to DB", Snackbar.LENGTH_LONG).show()
-                val action =
-                    AnswerFormFragmentDirections.actionAnswerFormFragmentToListOfAnswersToQuestionFragment(
-                        questionID = quizID
-                    )
-                findNavController().navigate(action)
+                    .addOnSuccessListener {
+                        val action =
+                            AnswerFormFragmentDirections.actionAnswerFormFragmentToListOfAnswersToQuestionFragment(
+                                questionID = quizID
+                            )
+                        findNavController().navigate(action)
+                        progressBarCreateAnswer?.visibility = View.GONE
+                        notifyUser("Answer successfully saved!")
+                    }
+                    .addOnFailureListener {e ->
+                        progressBarCreateAnswer?.visibility = View.GONE
+                        notifyUser(e.localizedMessage!!)
+                    }
             }
         }
     }
 
     private fun getUserID() = sharedPreferences.getString(KEY_USER_ID, "")!!
 
-    private fun getUsername() = sharedPreferences.getString(KEY_USER_NAME, "")!!
+    private fun notifyUser(message: String) = requireView().showSingleActionSnackbar(message)
 
     companion object {
         @JvmStatic

@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Can you answer any of these questions?"
+        android:text="@string/answer_request_header"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"

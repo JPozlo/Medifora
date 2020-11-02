@@ -8,18 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.misolova.medifora.data.repo.MediforaRepository
-import com.misolova.medifora.data.source.local.entities.AnswerEntity
-import com.misolova.medifora.data.source.local.entities.QuestionEntity
 import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.domain.model.User
+import com.misolova.medifora.domain.model.UserInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
@@ -36,17 +32,14 @@ class MainViewModel @ViewModelInject constructor(
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-    val questionID = MutableLiveData<String>()
+    private val userDetails = MutableLiveData<UserInfo>()
+    fun getUserDetails() = userDetails
+
+    private val questionID = MutableLiveData<String>()
     fun setQuestionId(questionId: String) {
         questionID.setValue(questionId)
     }
-    private fun getQuestionId() = questionID.value!!
-
-    val photoUrl = MutableLiveData<String>()
-    fun setPhotoUrl(url: String){
-        photoUrl.value = url
-    }
-    fun getPhotoUrl() = photoUrl.value!!
+    fun getQuestionId() = questionID.value!!
 
     private val _userProfile = MutableLiveData<User>()
     val userProfile: LiveData<User> = _userProfile
@@ -75,6 +68,14 @@ class MainViewModel @ViewModelInject constructor(
 
     val logout =
         mediforaRepository.logout()
+
+    fun fetchUserById(id: String){
+        viewModelScope.launch {
+            FirebaseProfileService.getUserById(id).collect{ value ->
+                userDetails.value = value
+            }
+        }
+    }
 
     fun fetchQuestionById(id: String){
         viewModelScope.launch {
@@ -124,43 +125,14 @@ class MainViewModel @ViewModelInject constructor(
         }
     }
 
-    fun addQuestion(questionId: String, content: String, userID: String, author: String) = viewModelScope.launch {
-        FirebaseProfileService.createQuestion(
-            questionId = questionId,
-            content = content,
-            userId = userID,
-            author = author
-        )
-            .onCompletion { cause ->
-                Timber.d("$TAG: Cause of completing question -> $cause")
-            }
-            .catch { cause ->
-                Timber.e("$TAG: Caught the exception -> $cause")
-            }
-            .collect { value ->
-                Timber.d("$TAG: The collected value is -> ${value.get().result}")
-            }
-    }
+    fun addQuestion(questionId: String, content: String, userID: String, author: String) = mediforaRepository.createQuestion(questionId, content, userID, author)
 
-    fun addAnswer(answer: AnswerInfo) = viewModelScope.launch {
-        FirebaseProfileService.createAnswer(answer = answer, answerId = answer.answerId)
-            .onCompletion {cause ->
-                Timber.d("$TAG: Cause of completing answer -> $cause")
-            }
-            .catch { cause ->
-                Timber.e("$TAG: Caught the exception -> $cause")
-            }
-            .collect { value ->
-                Timber.d("$TAG: Results of adding answer -> ${value.get().result}")
-            }
-    }
+    fun addAnswer(answer: AnswerInfo) = mediforaRepository.createAnswer(answer, answer.answerId)
 
-    fun deleteQuestion(questionEntity: QuestionEntity) = viewModelScope.launch {
-        mediforaRepository.deleteQuestion(questionEntity)
-    }
+    fun deleteQuestion(id: String) = mediforaRepository.deleteQuestion(id)
 
-    fun deleteAnswer(answerEntity: AnswerEntity) = viewModelScope.launch {
-        mediforaRepository.deleteAnswer(answerEntity)
-    }
+    fun deleteAnswer(id: String) = mediforaRepository.deleteAnswer(id)
+
+    fun deleteAcount(id: String) = mediforaRepository.deleteAccount(id)
 
 }

@@ -10,4 +10,5 @@
     <color name="colorAmbientPurple">#520383</color>
     <color name="colorAmbientRed">#C4AC044D</color>
     <color name="colorBlack">#000</color>
+    <color name="colorWhite">#FFF</color>
 </resources>

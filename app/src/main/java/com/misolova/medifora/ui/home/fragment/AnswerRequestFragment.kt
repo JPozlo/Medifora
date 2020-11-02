@@ -65,7 +65,7 @@ class AnswerRequestFragment : Fragment() {
         val recyclerView = rootView?.findViewById(R.id.recyclerViewAnswerRequest) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
         adapter = AnswerRequestAdapter(quizList) { position ->
-            val questionID = quizList[position].questionId
+            val questionID: String = quizList[position].questionId
             Timber.d("${TAG}: Answer Request Question ID: $questionID")
             val action = AnswerRequestFragmentDirections.actionAnswerRequestFragmentToAnswerFormFragment(questionID)
             findNavController().navigate(action)

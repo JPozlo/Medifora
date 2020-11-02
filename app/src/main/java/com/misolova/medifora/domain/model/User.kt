@@ -19,28 +19,25 @@ data class UserInfo(
     val userId: String,
     val name: String,
     val email: String,
-    val photo: String?,
     val accountCreatedAt: Timestamp
 ) : Parcelable {
 
     companion object {
         @ExperimentalTime
         fun DocumentSnapshot.toUserInfo(): UserInfo?{
-            try{
+            return try {
                 val name = getString("name")!!
-                val imageUrl = getString("photo")!!
                 val email = getString("email")!!
                 val createdAt = getTimestamp("accountCreatedAt")!!
-                return UserInfo(userId = id, name = name, photo = imageUrl, email = email, accountCreatedAt = createdAt)
+                UserInfo(userId = id, name = name, email = email, accountCreatedAt = createdAt)
             }catch (e: Exception) {
                 Timber.d("Error converting user profile: $e")
                 FirebaseCrashlytics.getInstance().log("Error converting user profile")
                 FirebaseCrashlytics.getInstance().setCustomKey("userID", id)
                 FirebaseCrashlytics.getInstance().recordException(e)
-                return null
+                null
             }
         }
-
 
         fun DocumentSnapshot.toUser(): User? {
             try {
@@ -54,7 +51,6 @@ data class UserInfo(
                         userId = id,
                         name = name,
                         email = email,
-                        photo = imageUrl,
                         accountCreatedAt = createdAt
                     )
                 )

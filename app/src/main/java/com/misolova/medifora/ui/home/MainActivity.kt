@@ -8,7 +8,6 @@ import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -22,8 +21,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.misolova.medifora.R
 import com.misolova.medifora.ui.auth.AuthActivity
-import com.misolova.medifora.ui.auth.viewmodel.AuthViewModel
-import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_STATUS
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
@@ -45,15 +42,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-    private val authViewModel: AuthViewModel by viewModels()
-    private val mainViewModel: MainViewModel by viewModels()
-
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onStart() {
         super.onStart()
 
-        val navController = findNavController(R.id.my_nav_host_fragment)
         val userState = sharedPreferences.getBoolean(KEY_USER_STATUS, false)
 
         Timber.d("$TAG: The user state before check is -> $userState")
@@ -72,14 +65,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setTheme(R.style.AppTheme)
         setContentView(R.layout.activity_main)
 
-
         val navController = findNavController(R.id.my_nav_host_fragment)
 
-//        imageView.setImageBitmap(BitmapConversion().decodeString(mainViewModel.getPhotoUrl()))
-
-//        GlobalScope.launch {
-//            checkConnection()
-//        }
+        checkConnection()
 
         appBarConfiguration = AppBarConfiguration.Builder(
             R.id.homeFragment, R.id.answerRequestFragment,
@@ -117,11 +105,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
     }
-
-//    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
-//        navDrawerHeaderName?.text = authViewModel.user?.email.toString()
-//        return super.onCreateView(name, context, attrs)
-//    }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.my_nav_host_fragment)

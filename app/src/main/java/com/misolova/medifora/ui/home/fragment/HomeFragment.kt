@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -18,8 +17,9 @@ import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.ui.auth.viewmodel.AuthViewModel
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
-import com.misolova.medifora.util.Constants.KEY_USER_NAME
+import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.adapters.HomeFeedAdapter
+import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,7 +52,6 @@ class HomeFragment : Fragment() {
 
         val navController = findNavController()
 
-
         setupRecyclerViewData(listOf())
 
         val fabAddQuestion = rootView.findViewById(R.id.fabAddQuestion) as FloatingActionButton?
@@ -69,11 +68,19 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val name = sharedPreferences.getString(KEY_USER_NAME, "")!!
+        progressBarHomeFeed?.visibility = View.VISIBLE
+
+        val id = sharedPreferences.getString(KEY_USER_ID, "")!!
+
+        viewModel.fetchUserById(id)
 
         viewModel.startFetchingHomeQuestions()
 
-    tvHomeFeedTitle.text = "Hello, $name"
+        viewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
+            progressBarHomeFeed?.visibility = View.GONE
+            Timber.e("$TAG: User Details -> ${it}")
+            tvHomeFeedTitle.text = "Hello, ${it.name}"
+        })
 
         val homeFeedQuestions = viewModel.questionsByCreationDate
         homeFeedQuestions.observe(viewLifecycleOwner, Observer {
@@ -98,21 +105,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun noRecyclerViewData() {
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onChanged() {
-                super.onChanged()
-                if (adapter.itemCount == 0) {
-                    Toast.makeText(
-                        activity,
-                        "Nothing to be displayed as of now",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    setupRecyclerview(view, listOf())
-                    adapter.notifyDataSetChanged()
-                }
-            }
-        })
+        notifyUser("No data to be displayed as of now.")
     }
+
+    private fun notifyUser(message: String) = requireView().showSingleActionSnackbar(message)
 
     private fun setupRecyclerViewData(quizList: List<QuestionInfo>) {
         setupRecyclerview(view, quizList)

@@ -5,7 +5,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.misolova.medifora.data.source.local.entities.*
-import io.reactivex.Completable
+import com.misolova.medifora.domain.model.AnswerInfo
 
 interface MediforaRepositoryInterface {
 
@@ -15,7 +15,11 @@ interface MediforaRepositoryInterface {
 
     suspend fun insertAnswer(answerEntity: AnswerEntity)
 
+    fun createAnswer(answer: AnswerInfo, answerId: String): Task<Void>
+
     suspend fun deleteAnswer(answerEntity: AnswerEntity)
+
+    fun deleteAnswer(id: String): Task<Void>
 
     fun getAnswer(id: Int): LiveData<AnswerEntity>
 
@@ -37,7 +41,14 @@ interface MediforaRepositoryInterface {
 
     suspend fun insertQuestion(questionEntity: QuestionEntity)
 
+    fun createQuestion(     questionId: String,
+                            content: String,
+                            userId: String,
+                            author: String): Task<Void>
+
     suspend fun deleteQuestion(questionEntity: QuestionEntity)
+
+    fun deleteQuestion(id: String): Task<Void>
 
     fun getQuestion(id: Int): LiveData<QuestionEntity>
 
@@ -59,7 +70,11 @@ interface MediforaRepositoryInterface {
 
     suspend fun insertUser(userEntity: UserEntity)
 
+    fun createUser(id: String, name: String, email: String): Task<Void>
+
     suspend fun deleteUser(userEntity: UserEntity)
+
+    fun deleteAccount(id: String): Task<Void>?
 
     fun getUserDetails(userID: Int): LiveData<UserEntity>
 

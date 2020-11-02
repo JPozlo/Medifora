@@ -8,24 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.misolova.medifora.R
-import com.misolova.medifora.ui.auth.ImagePickerDialog
 import com.misolova.medifora.ui.auth.viewmodel.AuthViewModel
 import com.misolova.medifora.ui.home.MainActivity
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
-import com.misolova.medifora.util.BitmapConversion
 import com.misolova.medifora.util.Constants.KEY_USER_ID
-import com.misolova.medifora.util.Constants.KEY_USER_NAME
 import com.misolova.medifora.util.Constants.KEY_USER_STATUS
-import com.misolova.medifora.util.Constants.USER_DATA_BUNDLE
+import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 import javax.inject.Inject
@@ -46,8 +44,6 @@ class RegisterFragment : Fragment() {
         private const val TAG = "REGISTER_FRAGMENT"
     }
 
-    private var photoUrl: String? = null
-
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
@@ -65,7 +61,6 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnImagePicker = view.findViewById(R.id.btnUserImage) as MaterialButton?
         val btnRegisterUser = view.findViewById(R.id.btnRegister) as MaterialButton?
         val switchScreenButton = view.findViewById(R.id.btnSwitchToLogin) as MaterialButton
 
@@ -74,20 +69,7 @@ class RegisterFragment : Fragment() {
         val passwordEditText = view.findViewById(R.id.etPassword) as EditText?
         val confirmPasswordEditText = view.findViewById(R.id.etConfirmPassword) as EditText?
         val checkboxAcceptTerms = view.findViewById(R.id.checkboxAcceptTerms) as CheckBox?
-        val userImage = view.findViewById(R.id.ivProfilePic) as ImageView?
 
-        photoUrl = authViewModel.getPhotoUrl()
-
-        Timber.d("$TAG: The photo url is: $photoUrl")
-
-        if(photoUrl != null){
-            userImage?.setImageBitmap(BitmapConversion().decodeString(photoUrl!!))
-        }
-
-        btnImagePicker?.setOnClickListener {
-            val dialog = ImagePickerDialog()
-            dialog.show(requireActivity().supportFragmentManager, "Image Picker Dialog")
-        }
 
         btnRegisterUser?.setOnClickListener {
             val username = usernameEditText?.text.toString()
@@ -97,17 +79,13 @@ class RegisterFragment : Fragment() {
 
             val termsAndConditionsStatus = checkboxAcceptTerms?.isChecked
             if (!authViewModel.validateSignUpFields(email = email, password = password, username = username, confirmPassword = confirmPassword)) {
-                Snackbar.make(view, "Please enter valid input", Snackbar.LENGTH_LONG).show()
+                notifyUser("Please enter valid input!")
                 Timber.e("Invalid input")
             } else {
                 if (termsAndConditionsStatus!!) {
                     register(username ,email, password)
                 } else {
-                    Snackbar.make(
-                        view,
-                        "Please accept the terms and conditions",
-                        Snackbar.LENGTH_LONG
-                    ).show()
+                   notifyUser("Please accept the terms and conditions before creating an account!")
                 }
             }
         }
@@ -119,29 +97,57 @@ class RegisterFragment : Fragment() {
     }
 
     private fun register(username: String, email: String, password: String) {
+        progressBarRegister?.visibility = View.VISIBLE
         authViewModel.signUpFunction(email = email, password= password)
             .addOnSuccessListener {
                 val fireUser = it.user
                 val fireUserId = fireUser?.uid!!
                 Timber.d("$TAG: The user id is -> $fireUserId")
-                authViewModel.saveUser(name = username, email = email, photo = photoUrl, userID = fireUserId)
-                Timber.d("$TAG: Executed after user save")
-                Timber.d("$TAG: Username -> $username")
-                Timber.d("$TAG: Photo -> $photoUrl")
-                Timber.d("$TAG: UserId -> $fireUserId")
-                Timber.d("$TAG: email -> $email")
-                sharedPreferences.edit().putString(KEY_USER_ID, fireUser.uid).apply()
-                sharedPreferences.edit().putString(KEY_USER_NAME, username).apply()
-                sharedPreferences.edit().putBoolean(KEY_USER_STATUS, true).apply()
-                val intent = Intent(requireActivity(), MainActivity::class.java)
-                intent.apply {
-                    this.putExtra(USER_DATA_BUNDLE, fireUser)
+
+                authViewModel.saveUser(name = username, email = email, userID = fireUserId)
+                    .addOnSuccessListener {
+                        Timber.d("$TAG: Executed after user save")
+                        Timber.d("$TAG: Username -> $username")
+                        Timber.d("$TAG: UserId -> $fireUserId")
+                        Timber.d("$TAG: email -> $email")
+
+                        sharedPreferences.edit().putString(KEY_USER_ID, fireUser.uid).apply()
+                        sharedPreferences.edit().putBoolean(KEY_USER_STATUS, true).apply()
+
+                        sharedViewModel.fetchUserById(fireUserId)
+
+                        notifyUser("Account created successfully")
+
+                        val intent = Intent(requireActivity(), MainActivity::class.java)
+                        startActivity(intent)
+                        progressBarRegister?.visibility = View.GONE
+
+                    }
+                    .addOnFailureListener {e ->
+                        notifyUser(e.localizedMessage)
+                    }
+
+            }
+            .addOnFailureListener {e ->
+                Timber.e("${TAG}: Error due to -> ${e.localizedMessage}")
+                progressBarRegister?.visibility = View.GONE
+                when (e) {
+                    is FirebaseAuthUserCollisionException -> {
+                        notifyUser("There is a problem with the email address you entered")
+                    }
+                    is FirebaseAuthWeakPasswordException -> {
+                        notifyUser("Weak Password")
+                    }
+                    else -> {
+                        notifyUser(e.localizedMessage!!)
+                    }
                 }
-                startActivity(intent)
+
             }
-            .addOnFailureListener {
-                Timber.e("${TAG}: Error due to -> ${it.message}")
-            }
+    }
+
+    private fun notifyUser(message : String){
+        requireView().showSingleActionSnackbar(message)
     }
 
     private fun goToLogin() {

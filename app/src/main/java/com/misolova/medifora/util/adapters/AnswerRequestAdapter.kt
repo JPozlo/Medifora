@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.QuestionInfo
+import com.misolova.medifora.util.DateConversion
 import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_answer_request_item.view.*
 
@@ -32,6 +33,9 @@ class AnswerRequestAdapter(private val questionsAnswerRequest: List<QuestionInfo
 
     override fun onBindViewHolder(holder: AnswerRequestViewHolder, position: Int) {
         val question = questionsAnswerRequest[position]
+        val date = DateConversion().convertDate(question.questionCreatedAt)
         holder.itemView.tvAnswerRequestQuestionTitle.text = question.questionContent
+        holder.itemView.tvAnswerRequestQuestionAuthor.text = question.questionAuthor
+        holder.itemView.tvAnswerRequestQuestionCreationDate.text = date
     }
 }

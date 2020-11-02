@@ -11,20 +11,32 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.misolova.medifora.R
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.adapters.UserAnswersAdapter
+import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_user_answers.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 @ExperimentalTime
 class UserAnswersFragment : Fragment() {
+    companion object {
+        @JvmStatic
+        fun newInstance() =
+            UserAnswersFragment().apply {
+                UserAnswersFragment()
+            }
+
+        private const val TAG = "USER ANSWERS FRAGMENT"
+    }
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -45,34 +57,25 @@ class UserAnswersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        progressBarUserAnswersFragment?.visibility = View.VISIBLE
+
         viewModel.startFetchingUserAnswers(getUserId())
 
         val userAnswers = viewModel.userAnswers
         userAnswers.observe(viewLifecycleOwner, Observer {
+            progressBarUserAnswersFragment?.visibility = View.GONE
             userAnswersArrayList = it
-            Timber.d("$TAG: The count for adapter items -> ${it.count()}")
             if(it.count() > 0){
                 setupRecyclerViewData(userAnswersArrayList)
             } else{
-                Snackbar.make(requireView(), "You haven't answered any question yet", Snackbar.LENGTH_LONG).show()
-                setupRecyclerview(view, listOf())
-                adapter.notifyDataSetChanged()
+                notifyUser("You haven't answered any question yet!")
             }
         })
     }
 
     private fun getUserId() = sharedPreferences.getString(KEY_USER_ID, "")!!
 
-
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            UserAnswersFragment().apply {
-                UserAnswersFragment()
-            }
-
-        private const val TAG = "USER ANSWERS FRAGMENT"
-    }
+    private fun notifyUser(message: String ) = requireView().showSingleActionSnackbar(message)
 
     private fun setupRecyclerViewData(quizList: List<AnswerInfo>) {
         setupRecyclerview(view, quizList)

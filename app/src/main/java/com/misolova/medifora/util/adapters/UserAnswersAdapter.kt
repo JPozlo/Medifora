@@ -29,7 +29,7 @@ class UserAnswersAdapter(private val userAnswersArrayList: List<AnswerInfo>,
     override fun onBindViewHolder(holder: UserAnswersViewHolder, position: Int) {
         val userAnswer = userAnswersArrayList[position]
         val date = DateConversion().convertDate(userAnswer.answerCreatedAt)
-        holder.itemView.tvUserAnswersQuestionTitleItem.text = date
-        holder.itemView.tvUserAnswerPreviewItem.text = userAnswer.answerContent
+        holder.itemView.tvUserAnswerCreationDate.text = date
+        holder.itemView.tvUserAnswerPreviewItem.text = "${userAnswer.answerContent.substring(0, 9)}..."
     }
 }

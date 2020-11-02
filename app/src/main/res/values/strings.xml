@@ -19,4 +19,7 @@
     <string name="no">No</string>
     <string name="permission_reason_camera">This app needs access to your camera to enable you to take pictures.</string>
     <string name="permission_reason_external">This app needs access to your external storage to enable you to select pictures from your gallery.</string>
+    <string name="search_icon">Search Icon String Representation</string>
+    <string name="search">Search</string>
+    <string name="answer_request_header">Click on any question to answer it</string>
 </resources>

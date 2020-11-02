@@ -5,14 +5,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:contentDescription="@string/user_profile_image"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/batsy" />
-
     <TextView
         android:id="@+id/navDrawerHeaderName"
         android:layout_width="match_parent"

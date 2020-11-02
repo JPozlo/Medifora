@@ -92,7 +92,7 @@ class ListOfAnswersToQuestionFragment : Fragment() {
             viewModel.setQuestionId(questionID)
             viewModel.fetchQuestionById(questionID)
 
-            Timber.d("$TAG: ViewModel quiz id is -> ${viewModel.questionID.value}")
+            Timber.d("$TAG: ViewModel quiz id is -> ${viewModel.getQuestionId()}")
 
             viewModel.startFetchingAnswersToQuestion()
 
