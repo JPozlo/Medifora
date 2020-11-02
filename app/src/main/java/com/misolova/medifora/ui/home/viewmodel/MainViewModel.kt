@@ -125,6 +125,10 @@ class MainViewModel @ViewModelInject constructor(
         }
     }
 
+    fun updateEmail(email: String, id: String) = mediforaRepository.updateEmail(email, id)
+
+    fun updateName(name: String, id: String) = mediforaRepository.updateName(name, id)
+
     fun addQuestion(questionId: String, content: String, userID: String, author: String) = mediforaRepository.createQuestion(questionId, content, userID, author)
 
     fun addAnswer(answer: AnswerInfo) = mediforaRepository.createAnswer(answer, answer.answerId)

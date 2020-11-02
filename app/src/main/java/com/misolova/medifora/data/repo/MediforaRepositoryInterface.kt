@@ -74,6 +74,10 @@ interface MediforaRepositoryInterface {
 
     suspend fun deleteUser(userEntity: UserEntity)
 
+    fun updateEmail(email: String, id: String): Task<Void>
+
+    fun updateName(name: String, id: String): Task<Void>
+
     fun deleteAccount(id: String): Task<Void>?
 
     fun getUserDetails(userID: Int): LiveData<UserEntity>

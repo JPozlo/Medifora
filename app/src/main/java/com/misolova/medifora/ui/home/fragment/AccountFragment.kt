@@ -2,6 +2,7 @@ package com.misolova.medifora.ui.home.fragment
 
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,11 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.misolova.medifora.R
+import com.misolova.medifora.ui.auth.AuthActivity
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.showAlert
-import com.misolova.medifora.util.showSingleActionSnackbar
+import com.misolova.medifora.util.showShortActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_account.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,6 +52,12 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val id = sharedPreferences.getString(KEY_USER_ID, "")!!
+
+        tvUpdateAccount?.setOnClickListener {
+//            val action = AccountFragmentDirections.actionAccountFragmentToUpdateAccountFragment()
+            findNavController().navigate(R.id.updateAccountFragment)
+        }
+
         tvDeleteAccount?.setOnClickListener {
             requireContext().showAlert("Delete Account", "Are you sure? All your information will be lost.")
                 ?.setNegativeButton("Cancel"){dialog, which ->
@@ -57,10 +66,9 @@ class AccountFragment : Fragment() {
                 ?.setPositiveButton("Confirm"){dialog: DialogInterface?, which: Int ->
                     viewModel.deleteAcount(id)?.addOnSuccessListener {
                         notifyUser("Account successfully deleted")
-//                        val action =
-//                            findNavController().navigate(action)
+                        val intent = Intent(requireContext(), AuthActivity::class.java)
+                        startActivity(intent)
                         dialog?.dismiss()
-
                     }?.addOnFailureListener { e ->
                         dialog?.dismiss()
                         notifyUser(e.localizedMessage!!)
@@ -71,6 +79,6 @@ class AccountFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    private fun notifyUser(message: String) = requireView().showSingleActionSnackbar(message)
+    private fun notifyUser(message: String) = requireView().showShortActionSnackbar(message)
 
 }

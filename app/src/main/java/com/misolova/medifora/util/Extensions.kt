@@ -26,6 +26,14 @@ fun View.showSingleActionSnackbar(message: String){
     ).setAction("OK"){}.setActionTextColor(Color.MAGENTA).setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
 }
 
+fun View.showShortActionSnackbar(message: String){
+    Snackbar.make(
+        this,
+        message,
+        Snackbar.LENGTH_LONG
+    ).setAction("OK"){}.setActionTextColor(Color.MAGENTA).setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+}
+
 fun Context.showAlert(title: String, message: String): AlertDialog.Builder? {
     val builder = AlertDialog.Builder(this)
         .setTitle(title)

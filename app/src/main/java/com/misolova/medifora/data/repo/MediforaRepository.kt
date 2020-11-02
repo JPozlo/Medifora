@@ -67,6 +67,9 @@ private val firebaseSource: FirebaseSource) :
     override fun deleteAccount(id: String): Task<Void>? = firebaseSource.deleteAccount(id)
 
     override suspend fun deleteUser(userEntity: UserEntity) = mediforaDao.deleteUser(userEntity)
+    override fun updateEmail(email: String, id: String): Task<Void> = firebaseSource.updateEmail(email, id)
+
+    override fun updateName(name: String, id: String): Task<Void> = firebaseSource.updateName(name, id)
 
     override fun getUserDetails(userID: Int): LiveData<UserEntity> = mediforaDao.getUserDetails(userID)
 

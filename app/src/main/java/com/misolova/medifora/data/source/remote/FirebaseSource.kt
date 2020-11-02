@@ -57,6 +57,14 @@ class FirebaseSource {
         return db.collection("questions").document(userId).set(question)
     }
 
+    fun updateName(name: String, id: String): Task<Void> {
+        return db.collection("users").document(id).update("name", name)
+    }
+
+    fun updateEmail(email: String, id: String): Task<Void> {
+        return db.collection("users").document(id).update("email", email)
+    }
+
     fun createAnswer(answer: AnswerInfo, answerId: String): Task<Void> {
         return db.collection("answers").document(answerId).set(answer)
     }

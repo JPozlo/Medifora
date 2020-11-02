@@ -66,6 +66,9 @@
         <action
             android:id="@+id/action_accountFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_accountFragment_to_updateAccountFragment"
+            app:destination="@id/updateAccountFragment" />
     </fragment>
     <fragment
         android:id="@+id/logoutFragment"
@@ -148,5 +151,14 @@
         <action
             android:id="@+id/action_questionFormFragment_to_listOfAnswersToQuestionFragment"
             app:destination="@id/listOfAnswersToQuestionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/updateAccountFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.UpdateAccountFragment"
+        android:label="fragment_update_account"
+        tools:layout="@layout/fragment_update_account" >
+        <action
+            android:id="@+id/action_updateAccountFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 </navigation>
