@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    tools:context=".ui.home.fragment.FeedbackFragment">
+
+    <TextView
+        android:id="@+id/tvFeedbackEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email" />
+    <EditText
+        android:id="@+id/etFeedbackEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="2" />
+    <TextView
+        android:id="@+id/tvFeedbackMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Message" />
+    <EditText
+        android:id="@+id/etFeedbackMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="4" />
+    <Button
+        android:id="@+id/btnSendFeedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send" />
+</LinearLayout>

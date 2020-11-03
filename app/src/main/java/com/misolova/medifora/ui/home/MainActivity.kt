@@ -1,6 +1,7 @@
 package com.misolova.medifora.ui.home
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
@@ -8,8 +9,10 @@ import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -21,7 +24,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.misolova.medifora.R
 import com.misolova.medifora.ui.auth.AuthActivity
+import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.Constants
+import com.misolova.medifora.util.Constants.DARK_STATUS
 import com.misolova.medifora.util.Constants.KEY_USER_STATUS
+import com.misolova.medifora.util.showAlert
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,6 +51,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onStart() {
         super.onStart()
 
@@ -62,12 +71,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setTheme(R.style.AppTheme)
         setContentView(R.layout.activity_main)
 
-        val navController = findNavController(R.id.my_nav_host_fragment)
-
         checkConnection()
+        checkTheme()
+
+        val navController = findNavController(R.id.my_nav_host_fragment)
 
         appBarConfiguration = AppBarConfiguration.Builder(
             R.id.homeFragment, R.id.answerRequestFragment,
@@ -119,12 +130,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.settingsMenuItem -> findNavController(
                 R.id.my_nav_host_fragment
             ).navigate(R.id.settingsFragment)
-            R.id.accountMenuItem -> findNavController(
-                R.id.my_nav_host_fragment
-            ).navigate(R.id.accountFragment)
-            R.id.logoutMenuItem -> findNavController(
-                R.id.my_nav_host_fragment
-            ).navigate(R.id.logoutFragment)
+//            R.id.accountMenuItem -> findNavController(
+//                R.id.my_nav_host_fragment
+//            ).navigate(R.id.accountFragment)
+            R.id.logoutMenuItem -> {
+                this.showAlert("Logout", "Confirm signing out")
+                    ?.setPositiveButton("Confirm"){dialog: DialogInterface?, which: Int ->
+                        viewModel.logout
+                        sharedPreferences.edit().putString(Constants.KEY_USER_NAME, "").apply()
+                        sharedPreferences.edit().putString(Constants.KEY_USER_ID, "").apply()
+                        sharedPreferences.edit().putBoolean(Constants.KEY_USER_STATUS, false).apply()
+                        val intent = Intent(this, AuthActivity::class.java)
+                        startActivity(intent)
+                        dialog?.dismiss()
+                    }
+                    ?.setNegativeButton("Cancel"){ dialog, which ->
+                        dialog.cancel()
+                    }
+                    ?.create()?.show()
+            }
             R.id.answerRequestsMenuItem -> findNavController(
                 R.id.my_nav_host_fragment
             ).navigate(R.id.answerRequestFragment)
@@ -144,6 +168,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
+        }
+    }
+
+    private fun checkTheme() {
+        when (sharedPreferences.getInt(DARK_STATUS, 0)) {
+            0 -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                delegate.applyDayNight()
+            }
+            1 -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                delegate.applyDayNight()
+            }
         }
     }
 

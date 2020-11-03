@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.Timestamp
@@ -16,6 +15,7 @@ import com.misolova.medifora.R
 import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.Constants
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,11 +50,7 @@ class AnswerFormFragment : Fragment() {
         arguments?.apply {
             val quizID = AnswerFormFragmentArgs.fromBundle(this).questionID
 
-            var username = ""
-
-            viewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
-                username = it.name
-            })
+            val name =   sharedPreferences.getString(Constants.KEY_USER_NAME, "")!!
 
             btnSubmitAnswer?.setOnClickListener {
                 progressBarCreateAnswer?.visibility = View.VISIBLE
@@ -62,7 +58,7 @@ class AnswerFormFragment : Fragment() {
                     .document(quizID).collection("answers").document().id
                 val answerContent = answerEditText?.text.toString()
                 val userID = getUserID()
-                val answer = AnswerInfo(answerId = id, answerContent = answerContent, answerAuthorID = userID, answerAuthor = username, answerCreatedAt = Timestamp.now(), questionID = quizID, votes = 0)
+                val answer = AnswerInfo(answerId = id, answerContent = answerContent, answerAuthorID = userID, answerAuthor = name, answerCreatedAt = Timestamp.now(), questionID = quizID, votes = 0)
                 viewModel.addAnswer(answer = answer)
                     .addOnSuccessListener {
                         val action =

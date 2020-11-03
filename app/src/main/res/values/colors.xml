@@ -11,4 +11,6 @@
     <color name="colorAmbientRed">#C4AC044D</color>
     <color name="colorBlack">#000</color>
     <color name="colorWhite">#FFF</color>
+    <color name="colorBottomNavAlt">#4A3F51B5</color>
+
 </resources>

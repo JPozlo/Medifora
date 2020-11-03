@@ -74,6 +74,8 @@ interface MediforaRepositoryInterface {
 
     suspend fun deleteUser(userEntity: UserEntity)
 
+    fun getCurrentUser(): FirebaseUser?
+
     fun updateEmail(email: String, id: String): Task<Void>
 
     fun updateName(name: String, id: String): Task<Void>

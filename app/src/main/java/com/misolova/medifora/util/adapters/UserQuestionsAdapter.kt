@@ -13,7 +13,8 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 class UserQuestionsAdapter(
     private val userQuestionsList: List<QuestionInfo>,
-    private val itemClick: (Int) -> Unit
+    private val itemClick: (Int) -> Unit,
+    private val itemLongClick: (Int) -> Unit
 ) : RecyclerView.Adapter<UserQuestionsAdapter.UserQuestionsViewHolder>() {
 
     inner class UserQuestionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
@@ -21,6 +22,11 @@ class UserQuestionsAdapter(
 
         init {
             itemView.setOnClickListener { itemClick(adapterPosition) }
+
+            itemView.setOnLongClickListener {
+                itemLongClick(adapterPosition)
+                true
+            }
         }
     }
 

@@ -132,20 +132,22 @@ object FirebaseProfileService {
 
     suspend fun getQuestionById(questionId: String): Flow<QuestionInfo?>{
         return callbackFlow {
-            val listenerRegistration = db.collection("questions").whereEqualTo("questionId", questionId)
+            val listenerRegistration = db.collection("questions").whereEqualTo("questionId",questionId)
                 .addSnapshotListener { value, error ->
-                    if(error != null){
-                        cancel(message = "Error fetching question", cause = error)
+                    if (error != null) {
+                        cancel(
+                            message = "Error fetching questions",
+                            cause = error
+                        )
                         return@addSnapshotListener
                     }
                     val map = value?.documents?.mapNotNull { it.toQuestionInfo() }
-                    val quiz = map?.first()
-                    Timber.d("$TAG: THe question is -> $quiz")
+                    if(map?.isEmpty()!!) return@addSnapshotListener
+                    val quiz = map.first()
                     offer(quiz)
                 }
             awaitClose {
                 Timber.d("$TAG: Cancelling question listener")
-                listenerRegistration.remove()
             }
         }
     }
@@ -159,6 +161,9 @@ object FirebaseProfileService {
                         return@addSnapshotListener
                     }
                     val map = value?.documents?.mapNotNull { it.toAnswerInfo() }
+//                    if(map?.isEmpty()!!){
+//                        return@addSnapshotListener
+//                    }
                     offer(map)
                 }
             awaitClose {
@@ -178,23 +183,13 @@ object FirebaseProfileService {
                 if(map?.isEmpty()!!){
                     return@addOnCompleteListener
                 }
-                val user = map?.first()
+                val user = map.first()
                 Timber.d("$TAG: The user is -> $user")
                 offer(user)
             }
             awaitClose {
                 Timber.d("$TAG: Cancelling user information listener")
             }
-//            .addSnapshotListener { value, error ->
-//                if(error != null){
-//                    cancel(message = "Error fetching user", cause = error)
-//                    return@addSnapshotListener
-//                }
-//                val map = value?.documents?.mapNotNull { it.toUserInfo() }
-//                val user = map?.first()
-//                Timber.d("$TAG: THe question is -> $user")
-//                offer(user)
-//            }
         }
     }
 

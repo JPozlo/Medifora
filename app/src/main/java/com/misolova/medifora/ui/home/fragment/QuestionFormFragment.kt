@@ -9,12 +9,12 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.misolova.medifora.R
 import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.Constants
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,18 +47,14 @@ class QuestionFormFragment : Fragment() {
         val questionEditText = view.findViewById(R.id.etQuestionContentForm) as EditText?
         val progressBarCreateQuestion = view.findViewById(R.id.progressBarCreateQuestion) as ProgressBar?
 
-        var username = ""
-
-        viewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
-            username = it.name
-        })
+        val name =   sharedPreferences.getString(Constants.KEY_USER_NAME, "")!!
 
         btnSubmitQuestion?.setOnClickListener {
             progressBarCreateQuestion?.visibility = View.VISIBLE
             val id = FirebaseProfileService.db.collection("users").document(getUserID()).collection("questions")
                 .document().id
             val questionContent = questionEditText?.text.toString()
-            viewModel.addQuestion(content = questionContent, questionId = id, userID = getUserID(), author = username)
+            viewModel.addQuestion(content = questionContent, questionId = id, userID = getUserID(), author = name)
                 .addOnSuccessListener {
                     progressBarCreateQuestion?.visibility = View.GONE
                     notifyUser("Question successfully saved!")
@@ -73,6 +69,7 @@ class QuestionFormFragment : Fragment() {
                 }
 
         }
+
     }
 
     private fun getUserID() = sharedPreferences.getString(KEY_USER_ID, "")!!

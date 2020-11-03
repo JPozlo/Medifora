@@ -1,7 +1,7 @@
 package com.misolova.medifora.ui.home.fragment
 
+import android.content.DialogInterface
 import android.content.SharedPreferences
-import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.misolova.medifora.R
@@ -18,8 +17,8 @@ import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.SwipeController
-import com.misolova.medifora.util.SwipeControllerActions
 import com.misolova.medifora.util.adapters.UserQuestionsAdapter
+import com.misolova.medifora.util.showAlert
 import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_user_questions.*
@@ -91,29 +90,32 @@ class UserQuestionsFragment : Fragment() {
     private fun notifyUser(message: String ) = requireView().showSingleActionSnackbar(message)
 
     private fun setupRecyclerview(rootView: View?, userQuizList: List<QuestionInfo>) {
-        swipeController = SwipeController(object: SwipeControllerActions(){
-            override fun onRightClicked(position: Int){
-                viewModel.deleteQuestion(userQuizList[position].questionId)
-                adapter.notifyItemRemoved(position)
-                adapter.notifyItemRangeChanged(position, adapter.itemCount)
-            }
-        })
-        val itemTouchHelper = ItemTouchHelper(swipeController)
         val recyclerView = rootView?.findViewById(R.id.recyclerViewUserQuestions) as RecyclerView?
         recyclerView?.layoutManager = LinearLayoutManager(activity)
-        adapter = UserQuestionsAdapter(userQuizList){position ->
+        adapter = UserQuestionsAdapter(userQuizList,
+            {position ->
             val questionID = userQuizList[position].questionId
             Timber.d("$TAG: Question ID is $questionID")
             val action = UserQuestionsFragmentDirections.actionUserQuestionsFragmentToListOfAnswersToQuestionFragment(questionID)
             findNavController().navigate(action)
-        }
-        recyclerView?.adapter = adapter
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-        recyclerView?.addItemDecoration(object: RecyclerView.ItemDecoration(){
-            override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-                super.onDraw(c, parent, state)
-                swipeController.onDraw(c)
-            }
+        }, {position ->
+                val questionID = userQuizList[position].questionId
+                requireContext().showAlert("Delete Question", "Go ahead with deletion?")
+                    ?.setNegativeButton("Cancel") { dialog: DialogInterface?, which: Int ->
+                        dialog?.cancel()
+                    }
+                    ?.setPositiveButton("Confirm") { dialog, which ->
+                        viewModel.deleteQuestion(questionID).addOnSuccessListener {
+                            adapter.notifyItemRemoved(position)
+                            dialog.dismiss()
+                            notifyUser("Question deleted successfully")
+                        }.addOnFailureListener { e ->
+                            dialog.dismiss()
+                            notifyUser(e.localizedMessage!!)
+                        }
+                    }?.create()?.show()
+
         })
+        recyclerView?.adapter = adapter
     }
 }

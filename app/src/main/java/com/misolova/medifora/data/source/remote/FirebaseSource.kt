@@ -54,7 +54,7 @@ class FirebaseSource {
             questionAuthor = author,
             totalNumberOfAnswers = 0
         )
-        return db.collection("questions").document(userId).set(question)
+        return db.collection("questions").document(questionId).set(question)
     }
 
     fun updateName(name: String, id: String): Task<Void> {

@@ -7,11 +7,6 @@
         android:id="@+id/homeMenuItem"/>
 
     <item
-        android:icon="@drawable/ic_account_circle"
-        android:title="Account"
-        android:id="@+id/accountMenuItem"/>
-
-    <item
         android:icon="@drawable/ic_settings"
         android:title="Settings"
         android:id="@+id/settingsMenuItem"/>

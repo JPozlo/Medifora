@@ -11,6 +11,7 @@
         android:id="@+id/tvLegalTerms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:text="Legal Terms"
         android:textSize="18sp" />
 
@@ -22,23 +23,19 @@
         android:background="?android:attr/listDivider" />
 
     <RelativeLayout
-        android:layout_marginTop="7sp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7sp"
+        android:clickable="true">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvUserDataSendOption"
+            android:id="@+id/tvPrivacyPolicy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send user data for better experience"
+            android:clickable="true"
+            android:text="Privacy Policy"
             android:textSize="18sp" />
 
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/checkboxSendUserData"
-            android:checked="true"
-            android:layout_alignParentEnd="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
     </RelativeLayout>
 
 

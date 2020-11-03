@@ -10,12 +10,17 @@ import com.misolova.medifora.util.inflate
 import kotlinx.android.synthetic.main.fragment_user_answers_item.view.*
 
 class UserAnswersAdapter(private val userAnswersArrayList: List<AnswerInfo>,
-                         private val itemClick: (Int) -> Unit): RecyclerView.Adapter<UserAnswersAdapter.UserAnswersViewHolder>() {
+                         private val itemClick: (Int) -> Unit,
+private val itemLongClick: (Int) -> Unit): RecyclerView.Adapter<UserAnswersAdapter.UserAnswersViewHolder>() {
 
     inner class UserAnswersViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         init {
             itemView.setOnClickListener { itemClick(adapterPosition) }
+            itemView.setOnLongClickListener {
+                itemLongClick(adapterPosition)
+                true
+            }
         }
     }
 
@@ -30,6 +35,6 @@ class UserAnswersAdapter(private val userAnswersArrayList: List<AnswerInfo>,
         val userAnswer = userAnswersArrayList[position]
         val date = DateConversion().convertDate(userAnswer.answerCreatedAt)
         holder.itemView.tvUserAnswerCreationDate.text = date
-        holder.itemView.tvUserAnswerPreviewItem.text = "${userAnswer.answerContent.substring(0, 9)}..."
+        holder.itemView.tvUserAnswerPreviewItem.text = userAnswer.answerContent
     }
 }

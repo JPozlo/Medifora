@@ -17,12 +17,15 @@ import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.isEmailValid
 import com.misolova.medifora.util.showSingleActionSnackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
 @ExperimentalTime
+@AndroidEntryPoint
 class UpdateAccountFragment : Fragment() {
 
     companion object {
@@ -30,6 +33,7 @@ class UpdateAccountFragment : Fragment() {
     }
 
     private val viewModel: MainViewModel by viewModels()
+
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
@@ -56,27 +60,30 @@ class UpdateAccountFragment : Fragment() {
 
         btnUpdateName?.setOnClickListener {
             val name = etUsername?.text.toString()
-                if(name.isBlank()){
-                    notifyUser("Please enter a name!")
-                    return@setOnClickListener
-                }
-                FirebaseAuth.getInstance().currentUser?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build())
-                    ?.addOnSuccessListener {
-                        val id = sharedPreferences.getString(KEY_USER_ID, "")!!
-                        viewModel.updateName(name, id).addOnSuccessListener {
-                            notifyUser("Name successfully updated")
-                            findNavController().navigate(R.id.homeFragment)
-                        }.addOnFailureListener {e ->
-                            notifyUser(e.localizedMessage!!)
-                        }
-                    }?.addOnFailureListener { e ->
+            if (name.isBlank()) {
+                notifyUser("Please enter a name!")
+                return@setOnClickListener
+            }
+            val user = viewModel.user
+            Timber.e("$TAG: User -> $user")
+            user
+                ?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build())
+                ?.addOnSuccessListener {
+                    val id = sharedPreferences.getString(KEY_USER_ID, "")!!
+                    viewModel.updateName(name, id).addOnSuccessListener {
+                        notifyUser("Name successfully updated")
+                        findNavController().navigate(R.id.homeFragment)
+                    }.addOnFailureListener { e ->
                         notifyUser(e.localizedMessage!!)
                     }
+                }?.addOnFailureListener { e ->
+                    notifyUser(e.localizedMessage!!)
+                }
         }
 
         btnUpdateEmail?.setOnClickListener {
             val email = etEmail?.text.toString()
-            if(!email.isEmailValid() || email.isBlank()){
+            if (!email.isEmailValid() || email.isBlank()) {
                 notifyUser("Please enter a valid email")
                 return@setOnClickListener
             }
@@ -85,7 +92,7 @@ class UpdateAccountFragment : Fragment() {
                 viewModel.updateEmail(email, id).addOnSuccessListener {
                     notifyUser("Email successfully updated")
                     findNavController().navigate(R.id.homeFragment)
-                }.addOnFailureListener {e ->
+                }.addOnFailureListener { e ->
                     notifyUser(e.localizedMessage!!)
                 }
 
@@ -97,18 +104,18 @@ class UpdateAccountFragment : Fragment() {
         btnUpdatePasswords?.setOnClickListener {
             val newPass = etNewPassword?.text.toString()
             val confirmPass = etConfirmNewPassword?.text.toString()
-            if(newPass != confirmPass){
+            if (newPass != confirmPass) {
                 notifyUser("Passwords do not match!")
                 return@setOnClickListener
             }
-            if(newPass.isBlank() || confirmPass.isBlank()){
+            if (newPass.isBlank() || confirmPass.isBlank()) {
                 notifyUser("Please enter password values")
                 return@setOnClickListener
             }
             FirebaseAuth.getInstance().currentUser?.updatePassword(newPass)?.addOnSuccessListener {
                 notifyUser("Password successfully updated!")
                 findNavController().navigate(R.id.homeFragment)
-            }?.addOnFailureListener {e ->
+            }?.addOnFailureListener { e ->
                 notifyUser(e.localizedMessage!!)
             }
         }

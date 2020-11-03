@@ -18,6 +18,7 @@ import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.ui.auth.viewmodel.AuthViewModel
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
+import com.misolova.medifora.util.Constants.KEY_USER_NAME
 import com.misolova.medifora.util.adapters.HomeFeedAdapter
 import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,6 +80,7 @@ class HomeFragment : Fragment() {
         viewModel.getUserDetails().observe(viewLifecycleOwner, Observer {
             progressBarHomeFeed?.visibility = View.GONE
             Timber.e("$TAG: User Details -> ${it}")
+            sharedPreferences.edit().putString(KEY_USER_NAME, it.name).apply()
             tvHomeFeedTitle.text = "Hello, ${it.name}"
         })
 
@@ -119,9 +121,7 @@ class HomeFragment : Fragment() {
         val recyclerView = rootView?.findViewById(R.id.recyclerViewHomeFeed) as RecyclerView?
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         adapter = HomeFeedAdapter(quizList) { position ->
-            val question = quizList[position]
-            val questionId = question.questionId
-            viewModel.setQuestionId(questionId)
+            val questionId = quizList[position].questionId
             Timber.d("$TAG: Question ID is $questionId")
             val action = HomeFragmentDirections.actionHomeFragmentToListOfAnswersToQuestionFragment(
                 questionID = questionId

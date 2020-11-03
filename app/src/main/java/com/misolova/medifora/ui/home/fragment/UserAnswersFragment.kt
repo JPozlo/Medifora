@@ -1,5 +1,6 @@
 package com.misolova.medifora.ui.home.fragment
 
+import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.adapters.UserAnswersAdapter
+import com.misolova.medifora.util.showAlert
 import com.misolova.medifora.util.showSingleActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_user_answers.*
@@ -85,13 +87,30 @@ class UserAnswersFragment : Fragment() {
     private fun setupRecyclerview(rootView: View?, userAnswers: List<AnswerInfo>) {
         val recyclerView = rootView?.findViewById(R.id.recyclerViewUserAnswers) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        adapter = UserAnswersAdapter(userAnswers){ position ->
+        adapter = UserAnswersAdapter(userAnswers, { position ->
             val userAnswer = userAnswers[position]
             val quizId = userAnswer.questionID
             Timber.d("$TAG: Question ID is $quizId")
             val action = UserAnswersFragmentDirections.actionUserAnswersFragmentToListOfAnswersToQuestionFragment(quizId)
             findNavController().navigate(action)
-        }
+        },
+        {position ->
+            val answerID = userAnswers[position].answerId
+            requireContext().showAlert("Delete Answer", "Go ahead with deletion?")
+                ?.setNegativeButton("Cancel") { dialog: DialogInterface?, which: Int ->
+                    dialog?.cancel()
+                }
+                ?.setPositiveButton("Confirm") { dialog, which ->
+                    viewModel.deleteAnswer(answerID).addOnSuccessListener {
+                        adapter.notifyItemRemoved(position)
+                        dialog.dismiss()
+                        notifyUser("Answer deleted successfully")
+                    }.addOnFailureListener { e ->
+                        dialog.dismiss()
+                        notifyUser(e.localizedMessage!!)
+                    }
+                }?.create()?.show()
+        })
         recyclerView.adapter = adapter
     }
 }

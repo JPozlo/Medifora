@@ -2,6 +2,7 @@ package com.misolova.medifora.data.repo
 
 import androidx.lifecycle.LiveData
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseUser
 import com.misolova.medifora.data.source.local.MediforaDao
 import com.misolova.medifora.data.source.local.entities.*
 import com.misolova.medifora.data.source.remote.FirebaseSource
@@ -67,6 +68,7 @@ private val firebaseSource: FirebaseSource) :
     override fun deleteAccount(id: String): Task<Void>? = firebaseSource.deleteAccount(id)
 
     override suspend fun deleteUser(userEntity: UserEntity) = mediforaDao.deleteUser(userEntity)
+    override fun getCurrentUser(): FirebaseUser?  = firebaseSource.currentUser()
     override fun updateEmail(email: String, id: String): Task<Void> = firebaseSource.updateEmail(email, id)
 
     override fun updateName(name: String, id: String): Task<Void> = firebaseSource.updateName(name, id)

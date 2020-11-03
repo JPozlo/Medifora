@@ -2,20 +2,23 @@ package com.misolova.medifora.ui.home.viewmodel
 
 import android.content.SharedPreferences
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.misolova.medifora.data.repo.MediforaRepository
 import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.domain.model.User
 import com.misolova.medifora.domain.model.UserInfo
+import com.misolova.medifora.util.FirebaseAuthUserState
+import com.misolova.medifora.util.UserSignedIn
+import com.misolova.medifora.util.UserSignedOut
+import com.misolova.medifora.util.UserUnknown
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
@@ -28,6 +31,8 @@ class MainViewModel @ViewModelInject constructor(
     companion object {
         private const val TAG = "MAIN_VIEW_MODEL"
     }
+
+    private var currentUser: FirebaseUser? = null
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -138,5 +143,17 @@ class MainViewModel @ViewModelInject constructor(
     fun deleteAnswer(id: String) = mediforaRepository.deleteAnswer(id)
 
     fun deleteAcount(id: String) = mediforaRepository.deleteAccount(id)
+
+    val myUserStateObserver =
+        Observer<FirebaseAuthUserState> { userState ->
+            when (userState) {
+                is UserSignedOut -> Timber.e("$TAG: User signed out")
+                is UserSignedIn -> {
+                    Timber.e("$TAG: User signed in")
+                    currentUser = userState.user
+                }
+                is UserUnknown -> Timber.e("$TAG: User unknown")
+            }
+        }
 
 }

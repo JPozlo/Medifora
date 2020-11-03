@@ -10,11 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.misolova.medifora.R
 import com.misolova.medifora.ui.auth.AuthActivity
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
 import com.misolova.medifora.util.Constants.KEY_USER_ID
+import com.misolova.medifora.util.Constants.KEY_USER_STATUS
 import com.misolova.medifora.util.showAlert
 import com.misolova.medifora.util.showShortActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,10 +53,6 @@ class AccountFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val id = sharedPreferences.getString(KEY_USER_ID, "")!!
 
-        tvUpdateAccount?.setOnClickListener {
-//            val action = AccountFragmentDirections.actionAccountFragmentToUpdateAccountFragment()
-            findNavController().navigate(R.id.updateAccountFragment)
-        }
 
         tvDeleteAccount?.setOnClickListener {
             requireContext().showAlert("Delete Account", "Are you sure? All your information will be lost.")
@@ -65,6 +61,8 @@ class AccountFragment : Fragment() {
                 }
                 ?.setPositiveButton("Confirm"){dialog: DialogInterface?, which: Int ->
                     viewModel.deleteAcount(id)?.addOnSuccessListener {
+                        sharedPreferences.edit().putString(KEY_USER_ID, "").apply()
+                        sharedPreferences.edit().putBoolean(KEY_USER_STATUS, false).apply()
                         notifyUser("Account successfully deleted")
                         val intent = Intent(requireContext(), AuthActivity::class.java)
                         startActivity(intent)
@@ -74,7 +72,7 @@ class AccountFragment : Fragment() {
                         notifyUser(e.localizedMessage!!)
                     }
 
-                }
+                }?.create()?.show()
         }
         super.onViewCreated(view, savedInstanceState)
     }

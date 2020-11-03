@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import com.misolova.medifora.data.source.local.MediforaDatabase
 import com.misolova.medifora.data.source.remote.FirebaseSource
+import com.misolova.medifora.util.Constants.DARK_STATUS
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.Constants.KEY_USER_STATUS
 import com.misolova.medifora.util.Constants.MEDIFORA_DB_NAME
@@ -50,5 +51,9 @@ object AppModule {
     @Singleton
     @Provides
     fun provideUserId(sharedPreferences: SharedPreferences) = sharedPreferences.getString(KEY_USER_ID, "") ?: ""
+
+    @Singleton
+    @Provides
+    fun provideDarkMode(sharedPreferences: SharedPreferences) = sharedPreferences.getInt(DARK_STATUS, 0)
 
 }

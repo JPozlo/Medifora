@@ -9,21 +9,6 @@
     tools:context="com.misolova.medifora.ui.home.fragment.AccountFragment">
 
     <TextView
-        android:id="@+id/tvUpdateAccount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="Change Account Details"
-        android:textSize="18sp" />
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="7sp"
-        android:background="?android:attr/listDivider" />
-
-    <TextView
         android:id="@+id/tvDeleteAccount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

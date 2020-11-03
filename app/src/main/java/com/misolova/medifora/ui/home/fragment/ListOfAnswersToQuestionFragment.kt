@@ -56,7 +56,11 @@ class ListOfAnswersToQuestionFragment : Fragment() {
                 val navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.homeFragment, true)
                     .build()
-                findNavController().navigate(R.id.action_listOfAnswersToQuestionFragment_to_homeFragment, savedInstanceState, navOptions)
+                findNavController().navigate(
+                    R.id.action_listOfAnswersToQuestionFragment_to_homeFragment,
+                    savedInstanceState,
+                    navOptions
+                )
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -87,30 +91,26 @@ class ListOfAnswersToQuestionFragment : Fragment() {
         arguments?.apply {
             var questionID = ListOfAnswersToQuestionFragmentArgs.fromBundle(this).questionID
 
-            Timber.d("$TAG: The question ID is $questionID")
-
             viewModel.setQuestionId(questionID)
             viewModel.fetchQuestionById(questionID)
 
-            Timber.d("$TAG: ViewModel quiz id is -> ${viewModel.getQuestionId()}")
-
             viewModel.startFetchingAnswersToQuestion()
 
-             viewModel.questionById.observe(viewLifecycleOwner, Observer {
-                 val quizContent = it.questionContent
-                 Timber.d("$TAG: Quiz Content is -> $quizContent")
-                 tvListOfAnswersToQuestionTitle.text = quizContent
+            viewModel.questionById.observe(viewLifecycleOwner, Observer {
+                progressBar?.visibility = View.GONE
+                val quizContent = it.questionContent
+                Timber.e("$TAG: Quiz Content is -> $quizContent")
+                tvListOfAnswersToQuestionTitle.text = quizContent
             })
 
             viewModel.answersToQuiz.observe(viewLifecycleOwner, Observer {
                 Timber.d("$TAG: The count of answers to quiz is -> ${it.count()}")
-                if(it.isEmpty() || it.count() <= 0 ){
+                if (it.isEmpty() || it.count() <= 0) {
                     Snackbar.make(view, "No answers yet", Snackbar.LENGTH_LONG).show()
                     progressBar?.visibility = View.GONE
                     return@Observer
                 }
                 answersToQuizArrayList = it
-                progressBar?.visibility = View.GONE
                 setupRecyclerview(view, answersToQuizArrayList)
                 adapter.notifyDataSetChanged()
             })
