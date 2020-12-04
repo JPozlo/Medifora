@@ -64,6 +64,8 @@ class MainViewModel @ViewModelInject constructor(
     val userQuestions: LiveData<List<QuestionInfo>> = _userQuestions
     private val _userAnswers = MutableLiveData<List<AnswerInfo>>()
     val userAnswers: LiveData<List<AnswerInfo>> = _userAnswers
+    private val _userPendingAnswers = MutableLiveData<List<AnswerInfo>>()
+    val userPendingAnswers: LiveData<List<AnswerInfo>> = _userPendingAnswers
     private val _questionById = MutableLiveData<QuestionInfo>()
     val questionById: LiveData<QuestionInfo> = _questionById
 
@@ -118,6 +120,14 @@ class MainViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             FirebaseProfileService.getUserAnswers(userID).collect{ value ->
                 _userAnswers.value = value
+            }
+        }
+    }
+
+    fun startFetchingUserPendingAnswers(userID: String){
+        viewModelScope.launch {
+            FirebaseProfileService.getUserPendingAnswers(userID).collect{ value ->
+                _userPendingAnswers.value = value
             }
         }
     }

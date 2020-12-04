@@ -37,7 +37,7 @@ class UserAnswersFragment : Fragment() {
                 UserAnswersFragment()
             }
 
-        private const val TAG = "USER ANSWERS FRAGMENT"
+        private const val TAG = "USER_ANSWERS_FRAGMENT"
     }
 
     private val viewModel: MainViewModel by viewModels()

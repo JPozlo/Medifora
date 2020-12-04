@@ -11,6 +11,7 @@ import com.misolova.medifora.domain.model.QuestionInfo
 import com.misolova.medifora.domain.model.QuestionInfo.Companion.toQuestionInfo
 import com.misolova.medifora.domain.model.UserInfo
 import com.misolova.medifora.domain.model.UserInfo.Companion.toUserInfo
+import com.misolova.medifora.util.AnswerStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
@@ -51,7 +52,45 @@ object FirebaseProfileService {
     suspend fun getUserAnswers(userId: String): Flow<List<AnswerInfo>?> {
         return callbackFlow {
             val listenerRegistration = db.collection("answers")
-                .whereEqualTo("answerAuthorID", userId)
+                .whereEqualTo("answerAuthorID", userId).whereEqualTo("status", AnswerStatus.ACCEPTED.toString())
+                .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
+                    if (error != null) {
+                        cancel(message = "Error fetching user answers", cause = error)
+                        return@addSnapshotListener
+                    }
+                    val map = value?.documents?.mapNotNull { it.toAnswerInfo() }
+                    offer(map)
+                }
+            awaitClose {
+                Timber.d("$TAG: Cancelling User Answers listener")
+                listenerRegistration.remove()
+            }
+        }
+    }
+
+    suspend fun getUserPendingAnswers(userId: String): Flow<List<AnswerInfo>?>{
+        return callbackFlow {
+            val listenerRegistration = db.collection("answers")
+                .whereEqualTo("answerAuthorID", userId).whereEqualTo("status", AnswerStatus.PENDING.toString())
+                .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
+                    if (error != null) {
+                        cancel(message = "Error fetching user answers", cause = error)
+                        return@addSnapshotListener
+                    }
+                    val map = value?.documents?.mapNotNull { it.toAnswerInfo() }
+                    offer(map)
+                }
+            awaitClose {
+                Timber.d("$TAG: Cancelling User Answers listener")
+                listenerRegistration.remove()
+            }
+        }
+    }
+
+    suspend fun getUserRejectedAnswers(userId: String): Flow<List<AnswerInfo>?>{
+        return callbackFlow {
+            val listenerRegistration = db.collection("answers")
+                .whereEqualTo("answerAuthorID", userId).whereEqualTo("status", AnswerStatus.REJECTED.toString())
                 .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
                     if (error != null) {
                         cancel(message = "Error fetching user answers", cause = error)
@@ -155,6 +194,7 @@ object FirebaseProfileService {
     suspend fun getAnswersToQuestion(questionId: String): Flow<List<AnswerInfo>?> {
         return callbackFlow {
             val listenerRegistration = db.collection("answers").whereEqualTo("questionID", questionId)
+                .whereEqualTo("status", AnswerStatus.ACCEPTED.toString())
                 .addSnapshotListener { value: QuerySnapshot?, error: FirebaseFirestoreException? ->
                     if (error != null) {
                         cancel(message = "Error fetching answers to question", cause = error)

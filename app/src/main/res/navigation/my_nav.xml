@@ -36,6 +36,9 @@
         <action
             android:id="@+id/action_profileFragment_to_userAnswersFragment"
             app:destination="@id/userAnswersFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_pendingAnswersFragment"
+            app:destination="@id/pendingAnswersFragment" />
     </fragment>
     <fragment
         android:id="@+id/answerRequestFragment"
@@ -108,12 +111,12 @@
         android:label="Your Answers"
         tools:layout="@layout/fragment_user_answers">
         <action
-            android:id="@+id/action_userAnswersFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
-        <action
             android:id="@+id/action_userAnswersFragment_to_listOfAnswersToQuestionFragment"
             app:destination="@id/listOfAnswersToQuestionFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_userAnswersFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/listOfAnswersToQuestionFragment"
@@ -181,4 +184,9 @@
         android:name="com.misolova.medifora.ui.home.fragment.FeedbackFragment"
         android:label="Feedback"
         tools:layout="@layout/fragment_feedback" />
+    <fragment
+        android:id="@+id/pendingAnswersFragment"
+        android:name="com.misolova.medifora.ui.home.fragment.PendingAnswersFragment"
+        android:label="Pending Answers"
+        tools:layout="@layout/fragment_pending_answers" />
 </navigation>

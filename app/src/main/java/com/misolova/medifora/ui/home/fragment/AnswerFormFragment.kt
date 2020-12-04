@@ -15,6 +15,7 @@ import com.misolova.medifora.R
 import com.misolova.medifora.data.source.remote.FirebaseProfileService
 import com.misolova.medifora.domain.model.AnswerInfo
 import com.misolova.medifora.ui.home.viewmodel.MainViewModel
+import com.misolova.medifora.util.AnswerStatus
 import com.misolova.medifora.util.Constants
 import com.misolova.medifora.util.Constants.KEY_USER_ID
 import com.misolova.medifora.util.showSingleActionSnackbar
@@ -58,7 +59,7 @@ class AnswerFormFragment : Fragment() {
                     .document(quizID).collection("answers").document().id
                 val answerContent = answerEditText?.text.toString()
                 val userID = getUserID()
-                val answer = AnswerInfo(answerId = id, answerContent = answerContent, answerAuthorID = userID, answerAuthor = name, answerCreatedAt = Timestamp.now(), questionID = quizID, votes = 0)
+                val answer = AnswerInfo(answerId = id, answerContent = answerContent, answerAuthorID = userID, answerAuthor = name, status = AnswerStatus.PENDING.toString(), answerCreatedAt = Timestamp.now(), questionID = quizID, votes = 0)
                 viewModel.addAnswer(answer = answer)
                     .addOnSuccessListener {
                         val action =

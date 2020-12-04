@@ -22,6 +22,7 @@ private val itemLongClick: (Int) -> Unit): RecyclerView.Adapter<UserAnswersAdapt
                 true
             }
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserAnswersViewHolder {
@@ -35,6 +36,7 @@ private val itemLongClick: (Int) -> Unit): RecyclerView.Adapter<UserAnswersAdapt
         val userAnswer = userAnswersArrayList[position]
         val date = DateConversion().convertDate(userAnswer.answerCreatedAt)
         holder.itemView.tvUserAnswerCreationDate.text = date
+        holder.itemView.tvAnswerStatus.text = userAnswer.status
         holder.itemView.tvUserAnswerPreviewItem.text = userAnswer.answerContent
     }
 }

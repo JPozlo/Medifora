@@ -7,38 +7,46 @@
     tools:context="com.misolova.medifora.ui.home.fragment.ProfileFragment">
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnProfileUserPendingAnswers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp"
+        android:outlineProvider="background"
+        android:text="Your Pending Answers"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnProfileUserAnswers"
+        app:layout_constraintStart_toStartOf="@+id/btnProfileUserAnswers"
+        app:layout_constraintTop_toBottomOf="@+id/btnProfileUserAnswers"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnProfileUserAnswers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="140dp"
-        android:layout_marginTop="120dp"
-        android:layout_marginEnd="141dp"
+        android:layout_marginTop="32dp"
         android:outlineProvider="background"
         android:text="Your Answers"
         android:textAlignment="center"
         android:textStyle="bold"
         app:flow_horizontalAlign="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/btnProfileUserQuestions" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnProfileUserQuestions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="134dp"
-        android:layout_marginTop="200dp"
-        android:layout_marginEnd="135dp"
-        android:layout_marginBottom="124dp"
+        android:layout_marginTop="204dp"
         android:outlineProvider="background"
         android:text="Your Questions"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnProfileUserAnswers"
-        app:layout_constraintVertical_bias="0.19999999" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
